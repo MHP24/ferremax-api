@@ -1,14 +1,28 @@
-version: '3.4'
+version: '3.8'
 
 services:
-  app:
-    container_name: nestjs-skeleton
-    env_file:
-      - .env
-    build: 
-      context: .
-      dockerfile: Dockerfile.dev
-    ports:
-      - ${PORT}:${PORT}
+  db:
+    image: postgres:15-alpine
+    restart: always
+    container_name: ${DB_NAME}
     volumes:
-      - ./:/app
+      - ./etc/db:/var/lib/postgresql/data
+    environment:
+      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    ports:
+      - ${DB_PORT}:5432
+  # app:
+  #   depends_on:
+  #     - db
+  #   container_name: ferremax-api
+  #   env_file:
+  #     - .env
+  #   build: 
+  #     context: .
+  #     dockerfile: Dockerfile.dev
+  #   ports:
+  #     - ${PORT}:${PORT}
+  #   volumes:
+  #     - ./:/app
