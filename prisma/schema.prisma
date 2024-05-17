@@ -13,6 +13,7 @@ enum ValidRoles {
   super_user
 }
 
+// * User database structure
 model User {
   id       String @id @default(uuid()) @map("id")
   email    String @unique @map("email")
@@ -25,12 +26,16 @@ model User {
   createdAt  DateTime  @default(now()) @map("created_at")
   lastAccess DateTime? @map("last_access")
 
-  LogAccess LogAccess[]
+  // * Relations
+  LogAccess    LogAccess[]
+  ShoppingCart ShoppingCart[]
+  Order        Order[]
 
   @@index([id, email])
   @@map("users")
 }
 
+// * Table to store every access on sign in by the user
 model LogAccess {
   id   String   @id @default(uuid()) @map("id")
   date DateTime @default(now()) @map("date")
@@ -40,4 +45,122 @@ model LogAccess {
   User   User   @relation(fields: [userId], references: [id])
 
   @@map("log_access")
+}
+
+// * Products
+model ProductCategory {
+  categoryId String @id @default(uuid()) @map("category_id")
+  name       String @unique @map("name")
+
+  Products Product[]
+
+  @@index([categoryId, name])
+  @@map("product_categories")
+}
+
+model Product {
+  productId   String   @id @default(uuid()) @map("product_id")
+  name        String   @map("name")
+  slug        String   @unique @map("slug")
+  price       Int      @map("price")
+  stock       Int      @default(0) @map("stock")
+  images      String[] @map("images")
+  description String?  @map("description")
+  discount    Int      @default(0) @map("discount")
+  keywords    String[] @map("keywords")
+
+  isActive   Boolean @default(false) @map("is_active")
+  categoryId String  @map("category_id")
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  // * Relations
+  ProductCategory  ProductCategory    @relation(fields: [categoryId], references: [categoryId])
+  ShoppingCartItem ShoppingCartItem[]
+  OrderItem        OrderItem[]
+
+  @@index([productId, slug])
+  @@map("products")
+}
+
+// * Shopping carts
+model ShoppingCart {
+  cartId   String @id @default(uuid()) @map("cart_id")
+  userId   String @map("user_id")
+  subtotal Int    @default(0) @map("subtotal")
+  total    Int    @default(0) @map("total")
+
+  isActive  Boolean  @default(true) @map("is_active")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  // * Relations
+  User             User               @relation(fields: [userId], references: [id])
+  ShoppingCartItem ShoppingCartItem[]
+  Order            Order[]
+
+  @@index([cartId, userId])
+  @@map("shopping_carts")
+}
+
+model ShoppingCartItem {
+  itemId    String @id @default(uuid()) @map("item_id")
+  productId String @map("product_id")
+  quantity  Int    @map("quantity")
+  cartId    String @map("cart_id")
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  ShoppingCart ShoppingCart @relation(fields: [cartId], references: [cartId])
+  Product      Product      @relation(fields: [productId], references: [productId]) // * Price extracted from product (to get prices updated)
+
+  @@index([cartId])
+  @@map("shopping_cart_items")
+}
+
+// * Orders
+
+enum OrderStatus {
+  PENDING // * Order received but not processed yet
+  PROCESSING // * Order is being prepared
+  SHIPPED // * Order sent but not received yet
+  DELIVERED // * Order received by the customer
+  COMPLETED // * Order finished and closed
+}
+
+model Order {
+  orderId   String      @id @default(uuid()) @map("order_id")
+  userId    String      @map("user_id")
+  cartId    String      @map("cart_id")
+  total     Int         @map("total")
+  status    OrderStatus @default(PENDING) @map("status")
+  createdAt DateTime    @default(now()) @map("created_at")
+  updatedAt DateTime    @updatedAt @map("updated_at")
+
+  // * Relations
+  User         User         @relation(fields: [userId], references: [id])
+  ShoppingCart ShoppingCart @relation(fields: [cartId], references: [cartId])
+  OrderItem    OrderItem[]
+
+  @@map("orders")
+}
+
+model OrderItem {
+  orderItemId String @id @default(uuid()) @map("order_item_id")
+  orderId     String @map("order_id")
+  productId   String @map("product_id")
+
+  quantity Int @map("quantity")
+  price    Int @map("price")
+  subtotal Int @map("subtotal")
+  discount Int @map("discount")
+  total    Int @map("total")
+
+  // * Relations
+  Product Product @relation(fields: [productId], references: [productId])
+  Order   Order   @relation(fields: [orderId], references: [orderId])
+
+  @@map("order_items")
 }
