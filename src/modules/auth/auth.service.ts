@@ -8,14 +8,19 @@ import { JwtService } from '@nestjs/jwt';
 import { User } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { SignUpUserDto } from './dto';
-import { HasherAdapter } from '../../common/adapters/interfaces';
-import { Hasher } from '../../common/adapters';
+import {
+  HasherAdapter,
+  IdGeneratorAdapter,
+} from '../../common/adapters/interfaces';
+import { Hasher, IdGenerator } from '../../common/adapters';
 import { envs } from '../../common/config';
+import { JwtPayload } from './interfaces';
 
 @Injectable()
 export class AuthService {
   private logger = new Logger(AuthService.name);
   private hasher: HasherAdapter = new Hasher();
+  private idGenerator: IdGeneratorAdapter = new IdGenerator();
 
   constructor(
     private readonly prismaService: PrismaService,
@@ -52,9 +57,11 @@ export class AuthService {
    */
   async loginUser(data: SignUpUserDto) {
     const { email, password } = data;
-    const user = await this.validateUser(email, password);
-
-    const token = await this.handleToken(user.id);
+    const user = await this.validateUserCredentials(email, password);
+    const token = await this.handleToken({
+      userId: user.id,
+      sessionId: this.idGenerator.id(),
+    });
 
     return {
       user: {
@@ -66,8 +73,21 @@ export class AuthService {
     };
   }
 
+  // * Close session for user
+  logoutUser(user: User) {
+    return this.prismaService.user.update({
+      where: { id: user.id },
+      data: {
+        sessionId: null,
+      },
+    });
+  }
+
   // * Valiadate user credentials vs db
-  async validateUser(email: string, password: string): Promise<User> {
+  async validateUserCredentials(
+    email: string,
+    password: string,
+  ): Promise<User> {
     const user = await this.prismaService.user.findUnique({
       where: { email, isActive: true },
     });
@@ -83,16 +103,13 @@ export class AuthService {
   }
 
   // * Sign token using JWT Strategy
-  signToken(id: string) {
+  signToken(data: JwtPayload) {
     return {
-      accessToken: this.jwtService.sign({ id }),
-      refreshToken: this.jwtService.sign(
-        { id },
-        {
-          expiresIn: envs.jwtRefreshExpireText,
-          secret: envs.jwtRefreshSecret,
-        },
-      ),
+      accessToken: this.jwtService.sign(data),
+      refreshToken: this.jwtService.sign(data, {
+        expiresIn: envs.jwtRefreshExpireText,
+        secret: envs.jwtRefreshSecret,
+      }),
       expiresIn: new Date().setTime(
         new Date().getTime() + envs.jwtExpireSeconds * 1000,
       ),
@@ -100,20 +117,19 @@ export class AuthService {
   }
 
   // * This method stores current token on db
-  async applyToken(userId: string, token: string) {
+  async applySession(userId: string, sessionId: string) {
     await this.prismaService.user.update({
       where: { id: userId },
       data: {
-        // * Token must be saved hashed
-        accessToken: await this.hasher.hash(token),
+        sessionId: await this.hasher.hash(sessionId),
       },
     });
   }
 
   // * Handler for creation and saving
-  async handleToken(userId: string) {
-    const token = this.signToken(userId);
-    await this.applyToken(userId, token.accessToken);
+  async handleToken(data: JwtPayload) {
+    const token = this.signToken(data);
+    await this.applySession(data.userId, data.sessionId);
     return token;
   }
 
@@ -124,16 +140,17 @@ export class AuthService {
         id: true,
         email: true,
         roles: true,
+        sessionId: true,
       },
     });
 
     return {
       user,
-      token: await this.handleToken(user.id),
+      token: await this.handleToken({ userId, sessionId: user.sessionId }),
     };
   }
 
-  // * Handler for service
+  // * Error Handler for service
   handleDatabaseErrors(error: any) {
     const badRequestCodes = {
       P2002: 'This email already exists',

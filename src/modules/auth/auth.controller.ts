@@ -1,7 +1,8 @@
-import { Body, Controller, Get, Post } from '@nestjs/common';
+import { Body, Controller, Get, Patch, Post } from '@nestjs/common';
+import { User } from '@prisma/client';
 import { AuthService } from './auth.service';
 import { SignInUserDto, SignUpUserDto } from './dto';
-import { AuthRefresh, GetUserId } from './decorators';
+import { Auth, AuthRefresh, GetUser, GetUserId } from './decorators';
 
 @Controller('auth')
 export class AuthController {
@@ -21,5 +22,11 @@ export class AuthController {
   @AuthRefresh()
   refreshToken(@GetUserId() userId: string) {
     return this.authService.refreshToken(userId);
+  }
+
+  @Patch('logout')
+  @Auth()
+  logout(@GetUser() user: User) {
+    return this.authService.logoutUser(user);
   }
 }

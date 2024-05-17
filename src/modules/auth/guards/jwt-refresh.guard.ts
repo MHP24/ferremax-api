@@ -23,7 +23,7 @@ export class JwtRefreshGuard implements CanActivate {
       const verification = this.jwtService.verify(token, {
         secret: envs.jwtRefreshSecret,
       });
-      request.userId = verification.id;
+      request.userId = verification.userId;
 
       return true;
     } catch (error) {
