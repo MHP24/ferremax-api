@@ -55,13 +55,14 @@ export class AuthService {
    * Makes validation using validateUser and
    * if the user is valid generates JWT
    */
-  async loginUser(data: SignUpUserDto) {
+  async loginUser(data: SignUpUserDto, ip: string) {
     const { email, password } = data;
     const user = await this.validateUserCredentials(email, password);
-    const token = await this.handleToken({
+    const token = await this.handleAccessCredentials({
       userId: user.id,
       sessionId: this.idGenerator.id(),
     });
+    await this.logAccess(user.id, ip);
 
     return {
       user: {
@@ -81,6 +82,17 @@ export class AuthService {
         sessionId: null,
       },
     });
+  }
+
+  // * Store access in database log table
+  async logAccess(userId: string, ip: string) {
+    await this.prismaService.logAccess.create({
+      data: {
+        userId,
+        ip,
+      },
+    });
+    this.logger.log(`Access: ${userId} - IP: ${ip}`);
   }
 
   // * Valiadate user credentials vs db
@@ -122,12 +134,13 @@ export class AuthService {
       where: { id: userId },
       data: {
         sessionId: await this.hasher.hash(sessionId),
+        lastAccess: new Date(),
       },
     });
   }
 
   // * Handler for creation and saving
-  async handleToken(data: JwtPayload) {
+  async handleAccessCredentials(data: JwtPayload) {
     const token = this.signToken(data);
     await this.applySession(data.userId, data.sessionId);
     return token;
@@ -146,7 +159,10 @@ export class AuthService {
 
     return {
       user,
-      token: await this.handleToken({ userId, sessionId: user.sessionId }),
+      token: await this.handleAccessCredentials({
+        userId,
+        sessionId: user.sessionId,
+      }),
     };
   }
 

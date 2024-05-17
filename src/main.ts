@@ -14,8 +14,12 @@ async function bootstrap() {
     new ValidationPipe({
       whitelist: true,
       forbidNonWhitelisted: true,
+      transform: true,
     }),
   );
+
+  // * Proxy config
+  app.getHttpAdapter().getInstance().set('trust proxy', true);
 
   // * Server listening initialization
   await app.listen(envs.port);

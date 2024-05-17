@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Patch, Post } from '@nestjs/common';
+import { Body, Controller, Get, Ip, Patch, Post } from '@nestjs/common';
 import { User } from '@prisma/client';
 import { AuthService } from './auth.service';
 import { SignInUserDto, SignUpUserDto } from './dto';
@@ -14,8 +14,8 @@ export class AuthController {
   }
 
   @Post('sign-in')
-  signIn(@Body() signInUserDto: SignInUserDto) {
-    return this.authService.loginUser(signInUserDto);
+  signIn(@Body() signInUserDto: SignInUserDto, @Ip() ip: string) {
+    return this.authService.loginUser(signInUserDto, ip);
   }
 
   @Get('refresh')

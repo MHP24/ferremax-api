@@ -28,7 +28,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     if (!user || !user.isActive || !user.sessionId)
       throw new UnauthorizedException('Invalid access');
 
-    // * Check session availability (black list)
+    // * Check session availability (black list for replaced sessions)
     const isValidSessionId = await this.hasher.compareHash(
       sessionId,
       user.sessionId,
