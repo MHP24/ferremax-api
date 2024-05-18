@@ -58,6 +58,16 @@ model ProductCategory {
   @@map("product_categories")
 }
 
+model ProductBrand {
+  brandId String @id @default(uuid()) @map("brand_id")
+  name    String @map("name")
+
+  // * Relations
+  Product Product[]
+
+  @@map("product_brands")
+}
+
 model Product {
   productId   String   @id @default(uuid()) @map("product_id")
   name        String   @map("name")
@@ -70,18 +80,36 @@ model Product {
   keywords    String[] @map("keywords")
 
   isActive   Boolean @default(false) @map("is_active")
+  brandId    String
   categoryId String  @map("category_id")
 
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
   // * Relations
-  ProductCategory  ProductCategory    @relation(fields: [categoryId], references: [categoryId])
-  ShoppingCartItem ShoppingCartItem[]
-  OrderItem        OrderItem[]
+  ProductCategory     ProductCategory       @relation(fields: [categoryId], references: [categoryId])
+  ProductBrand        ProductBrand          @relation(fields: [brandId], references: [brandId])
+  ShoppingCartItem    ShoppingCartItem[]
+  OrderItem           OrderItem[]
+  ProductPriceHistory ProductPriceHistory[]
 
   @@index([productId, slug])
   @@map("products")
+}
+
+// * Model for data analytics and price change registration 
+// * When the price changes must to store a new row
+model ProductPriceHistory {
+  id        String   @id @default(uuid()) @map("id")
+  productId String   @map("product_id")
+  price     Int      @map("price")
+  date      DateTime @default(now()) @map("date")
+
+  // * Relations
+  Product Product @relation(fields: [productId], references: [productId])
+
+  @@index([productId, date])
+  @@map("product_prices_history")
 }
 
 // * Shopping carts
