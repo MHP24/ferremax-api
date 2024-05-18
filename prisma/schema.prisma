@@ -180,7 +180,6 @@ model OrderItem {
   quantity Int @map("quantity")
   price    Int @map("price")
   subtotal Int @map("subtotal")
-  total    Int @map("total")
 
   // * Relations
   Product Product @relation(fields: [productId], references: [productId])
