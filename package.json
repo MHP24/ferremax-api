@@ -11,6 +11,9 @@
     "start:dev": "nest start --watch",
     "start:debug": "nest start --debug --watch",
     "start:prod": "node dist/main",
+    "prisma:migrate": "npx prisma migrate dev --name=_",
+    "prisma:generate": "npx prisma generate",
+    "prisma:init": "yarn prisma:migrate && yarn prisma:generate",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "prepare": "husky install"
