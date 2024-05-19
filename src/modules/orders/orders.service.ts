@@ -3,54 +3,24 @@ import { User } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { IdGeneratorAdapter } from '../../common/adapters/interfaces';
 import { IdGenerator } from '../../common/adapters';
-import { OrderItem, OrderProcessed } from './types';
+import { ShoppingCartsService } from '../shopping-carts/shopping-carts.service';
+import { type OrderItem, type OrderProcessed } from './types';
 
 @Injectable()
 export class OrdersService {
   private idGenerator: IdGeneratorAdapter = new IdGenerator();
   private logger = new Logger(OrdersService.name);
 
-  constructor(private readonly prismaService: PrismaService) {}
+  constructor(
+    private readonly prismaService: PrismaService,
+    private readonly shoppingCartsService: ShoppingCartsService,
+  ) {}
 
   async createOrder({ id: userId }: User): Promise<OrderProcessed> {
     // * Validate if user has a shopping cart active
-    // TODO: Use ShoppingCartService
-    const userShoppingCart = await this.prismaService.shoppingCart.findFirst({
-      where: {
-        userId,
-        isActive: true,
-      },
-      include: {
-        ShoppingCartItem: {
-          include: {
-            Product: {
-              select: {
-                productId: true,
-                name: true,
-                slug: true,
-                price: true,
-                stock: true,
-                images: true,
-                isActive: true,
-              },
-            },
-          },
-        },
-      },
-    });
-
-    if (!userShoppingCart) {
-      throw new BadRequestException('Shopping cart not found');
-    }
-
-    const { ShoppingCartItem: items, ...rest } = userShoppingCart;
-    const shoppingCart = {
-      ...rest,
-      items: items.map(({ Product, quantity }) => ({
-        product: Product,
-        quantity,
-      })),
-    };
+    const shoppingCart = await this.shoppingCartsService.getUserShoppingCart(
+      userId,
+    );
 
     // * Get items with the current price updated
     // TODO: Use ProductsService
@@ -112,6 +82,7 @@ export class OrdersService {
       (acc, { subtotal }) => (acc += subtotal),
       0,
     );
+
     try {
       const [order] = await this.prismaService.$transaction([
         // * Order creation
@@ -137,10 +108,14 @@ export class OrdersService {
 
       // TODO: Use StockService Update stock
 
-      // TODO: Use ShoppingCartService Clear & disable cart
+      // * Clear current user car
+      await this.shoppingCartsService.disableShoppingCartById(
+        shoppingCart.cartId,
+      );
+
       return {
-        order,
         items: orderItems,
+        order,
       };
     } catch (error) {
       this.logger.error(error);
