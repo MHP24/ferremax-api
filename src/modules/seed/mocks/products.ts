@@ -6,7 +6,7 @@ import { productCategoriesSeed } from './product-categories';
 const idGenerator: IdGeneratorAdapter = new IdGenerator();
 
 export const productsSeed = [
-  // Herramientas Manuales
+  // * Herramientas Manuales
   {
     productId: idGenerator.id(),
     name: 'Martillo',
@@ -47,7 +47,7 @@ export const productsSeed = [
     isActive: true,
   },
 
-  // Herramientas Eléctricas
+  // * Herramientas Eléctricas
   {
     productId: idGenerator.id(),
     name: 'Taladro Eléctrico',
@@ -75,7 +75,7 @@ export const productsSeed = [
     isActive: true,
   },
 
-  // Materiales de Construcción - Materiales Básicos
+  // * Materiales de Construcción - Materiales Básicos
   {
     productId: idGenerator.id(),
     name: 'Cemento',
@@ -103,7 +103,7 @@ export const productsSeed = [
     isActive: true,
   },
 
-  // Equipos de Seguridad
+  // * Equipos de Seguridad
   {
     productId: idGenerator.id(),
     name: 'Casco de Seguridad',

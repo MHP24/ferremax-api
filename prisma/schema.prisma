@@ -76,7 +76,6 @@ model Product {
   stock       Int      @default(0) @map("stock")
   images      String[] @map("images")
   description String?  @map("description")
-  discount    Int      @default(0) @map("discount")
   keywords    String[] @map("keywords")
 
   isActive   Boolean @default(false) @map("is_active")
@@ -114,10 +113,8 @@ model ProductPriceHistory {
 
 // * Shopping carts
 model ShoppingCart {
-  cartId   String @id @default(uuid()) @map("cart_id")
-  userId   String @map("user_id")
-  subtotal Int    @default(0) @map("subtotal")
-  total    Int    @default(0) @map("total")
+  cartId String @id @default(uuid()) @map("cart_id")
+  userId String @map("user_id")
 
   isActive  Boolean  @default(true) @map("is_active")
   createdAt DateTime @default(now()) @map("created_at")
@@ -151,7 +148,7 @@ model ShoppingCartItem {
 // * Orders
 
 enum OrderStatus {
-  PENDING // * Order received but not processed yet
+  PENDING // * Order received but not processed or paid yet
   PROCESSING // * Order is being prepared
   SHIPPED // * Order sent but not received yet
   DELIVERED // * Order received by the customer
@@ -183,8 +180,6 @@ model OrderItem {
   quantity Int @map("quantity")
   price    Int @map("price")
   subtotal Int @map("subtotal")
-  discount Int @map("discount")
-  total    Int @map("total")
 
   // * Relations
   Product Product @relation(fields: [productId], references: [productId])
