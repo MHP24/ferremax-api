@@ -5,6 +5,7 @@ import { IdGeneratorAdapter } from '../../common/adapters/interfaces';
 import { IdGenerator } from '../../common/adapters';
 import { ShoppingCartsService } from '../shopping-carts/shopping-carts.service';
 import { type OrderItem, type OrderProcessed } from './types';
+import { ProductsService } from '../products/products.service';
 
 @Injectable()
 export class OrdersService {
@@ -14,6 +15,7 @@ export class OrdersService {
   constructor(
     private readonly prismaService: PrismaService,
     private readonly shoppingCartsService: ShoppingCartsService,
+    private readonly productsService: ProductsService,
   ) {}
 
   async createOrder({ id: userId }: User): Promise<OrderProcessed> {
@@ -22,16 +24,10 @@ export class OrdersService {
       userId,
     );
 
-    // * Get items with the current price updated
-    // TODO: Use ProductsService
-    const products = await this.prismaService.product.findMany({
-      where: {
-        isActive: true,
-        productId: {
-          in: shoppingCart.items.map(({ product }) => product.productId),
-        },
-      },
-    });
+    // * Get many items with the current price updated
+    const products = await this.productsService.findManyProductsById(
+      shoppingCart.items.map(({ product }) => product.productId),
+    );
 
     // * Check if all products are active and available to buy (without considering stock)
     if (products.length !== shoppingCart.items.length) {

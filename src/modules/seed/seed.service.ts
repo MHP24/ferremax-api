@@ -5,11 +5,11 @@ import {
   productCategoriesSeed,
   productsSeed,
   shoppingCartItemsSeed,
+  shoppingCartsSeed,
   usersSeed,
 } from './mocks';
 import { HasherAdapter } from '../../common/adapters/interfaces';
 import { Hasher } from '../../common/adapters';
-import { shoppingCartsSeed } from './mocks/shopping-carts';
 
 @Injectable()
 export class SeedService {
