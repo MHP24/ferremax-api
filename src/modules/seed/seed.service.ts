@@ -20,6 +20,8 @@ export class SeedService {
     await this.prismaService.$transaction([
       // * Delete transaction
       this.prismaService.logAccess.deleteMany({}),
+      this.prismaService.orderItem.deleteMany({}),
+      this.prismaService.order.deleteMany({}),
       this.prismaService.shoppingCartItem.deleteMany({}),
       this.prismaService.shoppingCart.deleteMany({}),
       this.prismaService.user.deleteMany({}),

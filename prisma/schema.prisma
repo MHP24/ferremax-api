@@ -41,6 +41,7 @@ model LogAccess {
   date DateTime @default(now()) @map("date")
   ip   String?  @map("ip")
 
+  // * Relations
   userId String @map("user_id")
   User   User   @relation(fields: [userId], references: [id])
 
@@ -138,6 +139,7 @@ model ShoppingCartItem {
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
+  // * Relations
   ShoppingCart ShoppingCart @relation(fields: [cartId], references: [cartId])
   Product      Product      @relation(fields: [productId], references: [productId]) // * Price extracted from product (to get prices updated)
 
