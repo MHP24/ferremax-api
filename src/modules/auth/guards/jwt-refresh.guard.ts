@@ -7,6 +7,7 @@ import {
 import { JwtService } from '@nestjs/jwt';
 import { Observable } from 'rxjs';
 import { envs } from '../../../common/config';
+import { JwtPayload } from '../interfaces';
 
 @Injectable()
 export class JwtRefreshGuard implements CanActivate {
@@ -20,10 +21,13 @@ export class JwtRefreshGuard implements CanActivate {
       const token = (request.headers.authorization ?? '').split(' ')[1];
       if (!token) return false;
 
-      const verification = this.jwtService.verify(token, {
+      const verification: JwtPayload = this.jwtService.verify(token, {
         secret: envs.jwtRefreshSecret,
       });
-      request.userId = verification.userId;
+      request.payload = {
+        userId: verification.userId,
+        sessionId: verification.sessionId,
+      };
 
       return true;
     } catch (error) {
