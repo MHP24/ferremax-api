@@ -1,8 +1,9 @@
 import { Body, Controller, Get, Ip, Patch, Post } from '@nestjs/common';
-import { User } from '@prisma/client';
 import { AuthService } from './auth.service';
 import { SignInUserDto, SignUpUserDto } from './dto';
-import { Auth, AuthRefresh, GetUser, GetUserId } from './decorators';
+import { Auth, AuthRefresh, GetUser, GetRefreshPayload } from './decorators';
+import { JwtPayload } from './interfaces';
+import { User } from './types';
 
 @Controller('auth')
 export class AuthController {
@@ -20,8 +21,8 @@ export class AuthController {
 
   @Get('refresh')
   @AuthRefresh()
-  refreshToken(@GetUserId() userId: string) {
-    return this.authService.refreshToken(userId);
+  refreshToken(@GetRefreshPayload() payload: JwtPayload) {
+    return this.authService.refreshToken(payload);
   }
 
   @Patch('logout')
