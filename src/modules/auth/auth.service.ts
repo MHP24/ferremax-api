@@ -5,7 +5,6 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { User } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { SignUpUserDto } from './dto';
 import {
@@ -15,6 +14,7 @@ import {
 import { Hasher, IdGenerator } from '../../common/adapters';
 import { envs } from '../../common/config';
 import { JwtPayload } from './interfaces';
+import { Session, SessionLogout, SessionToken, User } from './types';
 
 @Injectable()
 export class AuthService {
@@ -28,7 +28,7 @@ export class AuthService {
   ) {}
 
   // * Register user and return JWT (auto sign in on register)
-  async createUser(signUpUserDto: SignUpUserDto) {
+  async createUser(signUpUserDto: SignUpUserDto): Promise<{ user: User }> {
     try {
       const { password, ...rest } = signUpUserDto;
       // * User creation
@@ -55,7 +55,7 @@ export class AuthService {
    * Makes validation using validateUser and
    * if the user is valid generates JWT
    */
-  async loginUser(data: SignUpUserDto, ip: string) {
+  async loginUser(data: SignUpUserDto, ip: string): Promise<Session> {
     const { email, password } = data;
     const user = await this.validateUserCredentials(email, password);
     const token = await this.handleAccessCredentials({
@@ -75,17 +75,21 @@ export class AuthService {
   }
 
   // * Close session for user
-  logoutUser(user: User) {
-    return this.prismaService.user.update({
+  async logoutUser(user: User): Promise<SessionLogout> {
+    const { id } = await this.prismaService.user.update({
       where: { id: user.id },
       data: {
         sessionId: null,
       },
     });
+    return {
+      message: 'Session finished',
+      userId: id,
+    };
   }
 
   // * Store access in database log table
-  async logAccess(userId: string, ip: string) {
+  async logAccess(userId: string, ip: string): Promise<void> {
     await this.prismaService.logAccess.create({
       data: {
         userId,
@@ -115,7 +119,7 @@ export class AuthService {
   }
 
   // * Sign token using JWT Strategy
-  signToken(data: JwtPayload) {
+  signToken(data: JwtPayload): SessionToken {
     return {
       accessToken: this.jwtService.sign(data),
       refreshToken: this.jwtService.sign(data, {
@@ -128,8 +132,41 @@ export class AuthService {
     };
   }
 
+  // * Validate session from JWT (Can be used for checking or refreshing)
+  async validateUserJWTSession(payload: JwtPayload): Promise<User> {
+    const { userId, sessionId } = payload;
+
+    // * Check user access
+    const user = await this.prismaService.user.findUnique({
+      where: { id: userId, isActive: true },
+      select: {
+        id: true,
+        sessionId: true,
+        email: true,
+        roles: true,
+      },
+    });
+    if (!user || !user.sessionId)
+      throw new UnauthorizedException('Invalid access');
+
+    // * Check session availability (black list for replaced sessions)
+    const isValidSessionId = await this.hasher.compareHash(
+      sessionId,
+      user.sessionId,
+    );
+    if (!isValidSessionId) {
+      throw new UnauthorizedException('This session has already expired');
+    }
+
+    return {
+      id: user.id,
+      email: user.email,
+      roles: user.roles,
+    };
+  }
+
   // * This method stores current token on db
-  async applySession(userId: string, sessionId: string) {
+  async applySession(userId: string, sessionId: string): Promise<void> {
     await this.prismaService.user.update({
       where: { id: userId },
       data: {
@@ -140,34 +177,25 @@ export class AuthService {
   }
 
   // * Handler for creation and saving
-  async handleAccessCredentials(data: JwtPayload) {
+  async handleAccessCredentials(data: JwtPayload): Promise<SessionToken> {
     const token = this.signToken(data);
     await this.applySession(data.userId, data.sessionId);
     return token;
   }
 
-  async refreshToken(userId: string) {
-    const user = await this.prismaService.user.findUnique({
-      where: { id: userId },
-      select: {
-        id: true,
-        email: true,
-        roles: true,
-        sessionId: true,
-      },
-    });
-
+  async refreshToken(jwtPayload: JwtPayload): Promise<Session> {
+    const user = await this.validateUserJWTSession(jwtPayload);
     return {
       user,
       token: await this.handleAccessCredentials({
-        userId,
-        sessionId: user.sessionId,
+        userId: user.id,
+        sessionId: this.idGenerator.id(),
       }),
     };
   }
 
   // * Error Handler for service
-  handleDatabaseErrors(error: any) {
+  handleDatabaseErrors(error: any): void {
     const badRequestCodes = {
       P2002: 'This email already exists',
     };
