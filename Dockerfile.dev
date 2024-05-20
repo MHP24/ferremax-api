@@ -4,6 +4,6 @@ FROM base as dev
 WORKDIR /app
 RUN npm i -g @nestjs/cli
 COPY package*.json ./
-RUN yarn
+RUN yarn --frozen-lockfile
 COPY . .
 CMD [ "yarn", "start:dev" ]
