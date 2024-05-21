@@ -2,6 +2,7 @@ export type OrderItem = {
   name: string;
   thumbnail: string;
   productId: string;
+  branchId: string;
   price: number;
   subtotal: number;
   quantity: number;
