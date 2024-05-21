@@ -9,6 +9,7 @@ datasource db {
 
 enum ValidRoles {
   user
+  seller
   admin
   super_user
 }
@@ -48,6 +49,20 @@ model LogAccess {
   @@map("log_access")
 }
 
+// * Branches
+model Branch {
+  branchId String  @id @default(uuid()) @map("branch_id")
+  name     String  @map("name")
+  isActive Boolean @default(true) @map("is_active")
+
+  // * Relations
+  ProductStock     ProductStock[]
+  ShoppingCartItem ShoppingCartItem[]
+  OrderItem        OrderItem[]
+
+  @@map("branches")
+}
+
 // * Products
 model ProductCategory {
   categoryId String @id @default(uuid()) @map("category_id")
@@ -63,10 +78,28 @@ model ProductBrand {
   brandId String @id @default(uuid()) @map("brand_id")
   name    String @map("name")
 
+  createdAt DateTime @default(now()) @map("created_at")
+
   // * Relations
   Product Product[]
 
   @@map("product_brands")
+}
+
+model ProductStock {
+  stockId   String @id @default(uuid()) @map("stock_id")
+  productId String @map("product_id")
+  quantity  Int    @map("quantity")
+  branchId  String @map("branch_id")
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  // * Relations
+  Product Product @relation(fields: [productId], references: [productId])
+  Branch  Branch  @relation(fields: [branchId], references: [branchId])
+
+  @@map("products_stock")
 }
 
 model Product {
@@ -80,7 +113,7 @@ model Product {
   keywords    String[] @map("keywords")
 
   isActive   Boolean @default(false) @map("is_active")
-  brandId    String
+  brandId    String  @map("brand_id")
   categoryId String  @map("category_id")
 
   createdAt DateTime @default(now()) @map("created_at")
@@ -92,6 +125,7 @@ model Product {
   ShoppingCartItem    ShoppingCartItem[]
   OrderItem           OrderItem[]
   ProductPriceHistory ProductPriceHistory[]
+  ProductStock        ProductStock[]
 
   @@index([productId, slug])
   @@map("products")
@@ -135,6 +169,7 @@ model ShoppingCartItem {
   productId String @map("product_id")
   quantity  Int    @map("quantity")
   cartId    String @map("cart_id")
+  branchId  String @map("branch_id")
 
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
@@ -142,6 +177,7 @@ model ShoppingCartItem {
   // * Relations
   ShoppingCart ShoppingCart @relation(fields: [cartId], references: [cartId])
   Product      Product      @relation(fields: [productId], references: [productId]) // * Price extracted from product (to get prices updated)
+  Branch       Branch       @relation(fields: [branchId], references: [branchId])
 
   @@index([cartId])
   @@map("shopping_cart_items")
@@ -178,6 +214,7 @@ model OrderItem {
   orderItemId String @id @default(uuid()) @map("order_item_id")
   orderId     String @map("order_id")
   productId   String @map("product_id")
+  branchId    String @map("branch_id")
 
   quantity Int @map("quantity")
   price    Int @map("price")
@@ -186,6 +223,7 @@ model OrderItem {
   // * Relations
   Product Product @relation(fields: [productId], references: [productId])
   Order   Order   @relation(fields: [orderId], references: [orderId])
+  Branch  Branch  @relation(fields: [branchId], references: [branchId])
 
   @@map("order_items")
 }
