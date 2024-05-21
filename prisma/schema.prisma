@@ -9,6 +9,7 @@ datasource db {
 
 enum ValidRoles {
   user
+  seller
   admin
   super_user
 }
@@ -48,6 +49,18 @@ model LogAccess {
   @@map("log_access")
 }
 
+// * Branches
+model Branch {
+  branchId String  @id @default(uuid()) @map("branch_id")
+  name     String  @map("name")
+  isActive Boolean @default(true) @map("is_active")
+
+  // * Relations
+  ProductStock ProductStock[]
+
+  @@map("branches")
+}
+
 // * Products
 model ProductCategory {
   categoryId String @id @default(uuid()) @map("category_id")
@@ -63,10 +76,28 @@ model ProductBrand {
   brandId String @id @default(uuid()) @map("brand_id")
   name    String @map("name")
 
+  createdAt DateTime @default(now()) @map("created_at")
+
   // * Relations
   Product Product[]
 
   @@map("product_brands")
+}
+
+model ProductStock {
+  stockId   String @id @default(uuid()) @map("stock_id")
+  productId String @map("product_id")
+  quantity  Int    @map("quantity")
+  branchId  String @map("branch_id")
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  // * Relations
+  Product Product @relation(fields: [productId], references: [productId])
+  Branch  Branch  @relation(fields: [branchId], references: [branchId])
+
+  @@map("products_stock")
 }
 
 model Product {
@@ -92,6 +123,7 @@ model Product {
   ShoppingCartItem    ShoppingCartItem[]
   OrderItem           OrderItem[]
   ProductPriceHistory ProductPriceHistory[]
+  ProductStock        ProductStock[]
 
   @@index([productId, slug])
   @@map("products")
