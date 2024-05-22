@@ -1,6 +1,6 @@
 import { IsEmail, IsString, Matches } from 'class-validator';
 
-export class CreateClientOrderDto {
+export class CreateOrderDto {
   @IsString()
   address: string;
 

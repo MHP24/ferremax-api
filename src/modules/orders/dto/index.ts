@@ -1,1 +1,2 @@
-export { CreateClientOrderDto } from './create-client-order.dto';
+export { CreateOrderDto } from './create-order.dto';
+export { CreateOrderParamsDto } from './create-order-params.dto';

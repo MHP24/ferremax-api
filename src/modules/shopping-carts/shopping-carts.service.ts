@@ -8,10 +8,14 @@ export class ShoppingCartsService {
   constructor(private readonly prismaService: PrismaService) {}
 
   // * Get shopping cart by userId
-  async getUserShoppingCart(userId: string): Promise<ShoppingCart> {
+  async getUserShoppingCart(
+    userId: string,
+    cartId: string,
+  ): Promise<ShoppingCart> {
     const userShoppingCart = await this.prismaService.shoppingCart.findFirst({
       where: {
         userId,
+        cartId,
         isActive: true,
       },
       include: {
