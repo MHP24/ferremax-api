@@ -1,7 +1,8 @@
-import { Controller, Post } from '@nestjs/common';
+import { Body, Controller, Post } from '@nestjs/common';
 import { User, ValidRoles } from '@prisma/client';
 import { OrdersService } from './orders.service';
 import { Auth, GetUser } from '../auth/decorators';
+import { CreateClientOrderDto } from './dto';
 
 @Controller('orders')
 export class OrdersController {
@@ -9,7 +10,10 @@ export class OrdersController {
 
   @Post('/client')
   @Auth(ValidRoles.user)
-  createOrder(@GetUser() user: User) {
-    return this.ordersService.createClientOrder(user);
+  createClientOrder(
+    @GetUser() user: User,
+    @Body() createClientOrderDto: CreateClientOrderDto,
+  ) {
+    return this.ordersService.createClientOrder(user, createClientOrderDto);
   }
 }

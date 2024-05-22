@@ -7,6 +7,7 @@ import { ShoppingCartsService } from '../shopping-carts/shopping-carts.service';
 import { ProductsService } from '../products/products.service';
 import { StockService } from '../stock/stock.service';
 import { calculateOrder } from './helpers';
+import { CreateClientOrderDto } from './dto';
 
 @Injectable()
 export class OrdersService {
@@ -31,13 +32,16 @@ export class OrdersService {
     });
   }
 
-  async createClientOrder({ id: userId }: User) {
+  async createClientOrder(
+    { id: userId }: User,
+    createClientOrderDto: CreateClientOrderDto,
+  ) {
     // * Validate if the user has unpaid order
     const lastClientOrder = await this.getLastClientOrder(userId);
     if (lastClientOrder?.status === OrderStatus.PENDING) {
       throw new BadRequestException(
-        'There was an error processing your order\
-         (latest order status: payment missing / not processed yet)',
+        'There was an error processing your order ' +
+          '(latest order status: payment missing / not processed yet)',
       );
     }
 
@@ -94,6 +98,7 @@ export class OrdersService {
             userId,
             cartId: shoppingCart.cartId,
             total,
+            ...createClientOrderDto,
           },
         }),
         // * Order items creation
