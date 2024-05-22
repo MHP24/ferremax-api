@@ -42,8 +42,9 @@ export class ShoppingCartsService {
     const { ShoppingCartItem: items, ...rest } = userShoppingCart;
     return {
       ...rest,
-      items: items.map(({ Product, quantity }) => ({
+      items: items.map(({ Product, quantity, branchId }) => ({
         product: Product,
+        branchId,
         quantity,
       })),
     };

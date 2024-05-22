@@ -6,9 +6,16 @@ import { AuthModule } from '../auth/auth.module';
 import { PrismaModule } from '../prisma/prisma.module';
 import { ShoppingCartsModule } from '../shopping-carts/shopping-carts.module';
 import { ProductsModule } from '../products/products.module';
+import { StockModule } from '../stock/stock.module';
 
 @Module({
-  imports: [PrismaModule, AuthModule, ShoppingCartsModule, ProductsModule],
+  imports: [
+    PrismaModule,
+    AuthModule,
+    ShoppingCartsModule,
+    ProductsModule,
+    StockModule,
+  ],
   controllers: [OrdersController],
   providers: [OrdersService],
 })

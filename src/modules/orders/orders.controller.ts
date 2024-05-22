@@ -7,9 +7,9 @@ import { Auth, GetUser } from '../auth/decorators';
 export class OrdersController {
   constructor(private readonly ordersService: OrdersService) {}
 
-  @Post('/create')
+  @Post('/client')
   @Auth(ValidRoles.user)
   createOrder(@GetUser() user: User) {
-    return this.ordersService.createOrder(user);
+    return this.ordersService.createClientOrder(user);
   }
 }

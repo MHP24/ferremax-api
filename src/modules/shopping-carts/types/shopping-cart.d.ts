@@ -15,5 +15,6 @@ export type ShoppingCart = {
       images: string[];
     };
     quantity: number;
+    branchId: string;
   }[];
 };

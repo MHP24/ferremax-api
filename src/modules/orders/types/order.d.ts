@@ -22,3 +22,14 @@ export type OrderProcessed = {
   order: OrderSummary;
   items: OrderItem[];
 };
+
+export type OrderCalculation = {
+  total: number;
+  detail: {
+    productId: string;
+    branchId: string;
+    quantity: number;
+    price: number;
+    subtotal: number;
+  }[];
+};
