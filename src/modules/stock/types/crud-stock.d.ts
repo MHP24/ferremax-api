@@ -3,3 +3,8 @@ export type DiscreaseStock = {
   branchId: string;
   quantity: number;
 };
+
+export type DiscreaseStockOutput = {
+  totalStockDifference: number;
+  branchStockDifference: number;
+};
