@@ -1,5 +1,5 @@
 import { BadRequestException, Injectable, Logger } from '@nestjs/common';
-import { User } from '@prisma/client';
+import { Order, OrderStatus, User } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { IdGeneratorAdapter } from '../../common/adapters/interfaces';
 import { IdGenerator } from '../../common/adapters';
@@ -20,7 +20,27 @@ export class OrdersService {
     private readonly stockService: StockService,
   ) {}
 
+  async getLastClientOrder(userId: string): Promise<Order> {
+    return await this.prismaService.order.findFirst({
+      where: {
+        userId,
+      },
+      orderBy: {
+        createdAt: 'desc',
+      },
+    });
+  }
+
   async createClientOrder({ id: userId }: User) {
+    // * Validate if the user has unpaid order
+    const lastClientOrder = await this.getLastClientOrder(userId);
+    if (lastClientOrder?.status === OrderStatus.PENDING) {
+      throw new BadRequestException(
+        'There was an error processing your order\
+         (latest order status: payment missing / not processed yet)',
+      );
+    }
+
     // * Get current user shopping cart
     const shoppingCart = await this.shoppingCartsService.getUserShoppingCart(
       userId,
@@ -85,7 +105,10 @@ export class OrdersService {
         }),
       ]);
 
-      // TODO: Use StockService Update stock
+      // * Stock update for all items in cart that were processed
+      await Promise.all(
+        detail.map((item) => this.stockService.discreaseStock(item)),
+      );
 
       // * Clear current user car
       await this.shoppingCartsService.disableShoppingCartById(
