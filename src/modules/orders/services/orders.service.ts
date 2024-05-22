@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { OrdersFactory } from '../factories/orders.factory';
 import { User } from '@prisma/client';
+import { OrdersFactory } from '../factories/orders.factory';
 import { CreateOrderDto, CreateOrderParamsDto } from '../dto';
 import { OrderType } from '../interfaces';
 
@@ -9,8 +9,8 @@ export class OrdersService {
   constructor(private readonly ordersFactory: OrdersFactory) {}
 
   async createOrder(
-    orderType: OrderType,
     user: User,
+    orderType: OrderType,
     createOrderParamsDto: CreateOrderParamsDto,
     createOrderDto: CreateOrderDto,
   ) {

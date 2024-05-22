@@ -11,9 +11,9 @@ export class OrdersFactory implements OrdersCreator {
 
   // * Main handler
   handleOrderCreation(orderType: OrderType): Order {
-    const orders: Record<string, Order> = {
-      client: this.clientOrdersService,
-      // branch: this.branchOrdersService,
+    const orders: Record<OrderType, Order> = {
+      [OrderType.client]: this.clientOrdersService,
+      [OrderType.branch]: this.branchOrdersService,
     };
 
     const orderInstance = orders[orderType];

@@ -16,7 +16,10 @@ export interface Order {
   ): Promise<OrderProcessed>;
 }
 
-export type OrderType = 'client' | 'branch';
+export enum OrderType {
+  client = 'client',
+  branch = 'branch',
+}
 
 export interface OrdersCreator {
   handleOrderCreation(orderType: OrderType): Order;

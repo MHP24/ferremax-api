@@ -23,6 +23,7 @@ model User {
   roles     ValidRoles[] @default([user]) @map("roles")
   isActive  Boolean      @default(true) @map("is_active")
   sessionId String?      @map("session_id")
+  branchId  String?      @map("branch_id")
 
   createdAt  DateTime  @default(now()) @map("created_at")
   lastAccess DateTime? @map("last_access")
@@ -31,6 +32,7 @@ model User {
   LogAccess    LogAccess[]
   ShoppingCart ShoppingCart[]
   Order        Order[]
+  Branch       Branch?        @relation(fields: [branchId], references: [branchId])
 
   @@index([id, email])
   @@map("users")
@@ -59,6 +61,7 @@ model Branch {
   ProductStock     ProductStock[]
   ShoppingCartItem ShoppingCartItem[]
   OrderItem        OrderItem[]
+  User             User[]
 
   @@map("branches")
 }
