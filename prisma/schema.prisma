@@ -29,10 +29,11 @@ model User {
   lastAccess DateTime? @map("last_access")
 
   // * Relations
-  LogAccess    LogAccess[]
-  ShoppingCart ShoppingCart[]
-  Order        Order[]
-  Branch       Branch?        @relation(fields: [branchId], references: [branchId])
+  LogAccess      LogAccess[]
+  ShoppingCart   ShoppingCart[]
+  Order          Order[]
+  Branch         Branch?        @relation(fields: [branchId], references: [branchId])
+  OrdersAsSeller Order[]        @relation("OrderSeller")
 
   @@index([id, email])
   @@map("users")
@@ -62,6 +63,7 @@ model Branch {
   ShoppingCartItem ShoppingCartItem[]
   OrderItem        OrderItem[]
   User             User[]
+  Order            Order[]
 
   @@map("branches")
 }
@@ -197,11 +199,13 @@ enum OrderStatus {
 }
 
 model Order {
-  orderId String      @id @default(uuid()) @map("order_id")
-  userId  String      @map("user_id")
-  cartId  String      @map("cart_id")
-  total   Int         @map("total")
-  status  OrderStatus @default(PENDING) @map("status")
+  orderId  String      @id @default(uuid()) @map("order_id")
+  userId   String      @map("user_id")
+  sellerId String?     @map("seller_id")
+  branchId String?     @map("branch_id")
+  cartId   String      @map("cart_id")
+  total    Int         @map("total")
+  status   OrderStatus @default(PENDING) @map("status")
 
   // * User delivery information from e-commerce
   address     String @map("address")
@@ -213,6 +217,8 @@ model Order {
 
   // * Relations
   User         User         @relation(fields: [userId], references: [id])
+  Seller       User?        @relation("OrderSeller", fields: [sellerId], references: [id])
+  Branch       Branch?      @relation(fields: [branchId], references: [branchId])
   ShoppingCart ShoppingCart @relation(fields: [cartId], references: [cartId])
   OrderItem    OrderItem[]
 

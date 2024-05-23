@@ -46,8 +46,9 @@ export class BranchOrdersService implements Order {
       );
     }
 
-    // * Stock branch validation (check if all products are from unique branch branch)
-    await this.validateStockAvailability(shoppingCart.items);
+    // * Stock branch validation (check if all products are from unique branch)
+    const branchId = await this.getBranchByUser(userId);
+    await this.validateStockAvailability(shoppingCart.items, branchId);
 
     // * Subtotal for each item calc
     const { total, detail } = calculateOrder(shoppingCart.items, products);
@@ -55,6 +56,7 @@ export class BranchOrdersService implements Order {
     // * *** Order creation process...
     return this.processOrderTransaction(
       userId,
+      branchId,
       shoppingCart,
       total,
       detail,
@@ -63,8 +65,10 @@ export class BranchOrdersService implements Order {
   }
 
   // * Branch stock validation
-  // TODO: Refactor this
-  async validateStockAvailability(cartItems: Items[]): Promise<void> {
+  async validateStockAvailability(
+    cartItems: Items[],
+    stockBranchId: string,
+  ): Promise<void> {
     const productsBranchStock = await Promise.all(
       cartItems.map(({ product: { productId }, branchId }) =>
         this.stockService.getProductStockByBranch(productId, branchId),
@@ -75,8 +79,10 @@ export class BranchOrdersService implements Order {
       ({ product: { productId }, branchId, quantity }) =>
         productsBranchStock.find(
           (product) =>
-            product.productId === productId && product.branchId === branchId,
-        ).quantity >= quantity,
+            product.productId === productId &&
+            product.branchId === branchId &&
+            product.branchId === stockBranchId,
+        )?.quantity >= quantity,
     );
 
     if (!areAllProductsInStock) {
@@ -84,9 +90,26 @@ export class BranchOrdersService implements Order {
     }
   }
 
+  // * Get branch by specific user (workers/sellers cases)
+  async getBranchByUser(userId: string) {
+    const branch = await this.prismaService.user.findUnique({
+      where: { id: userId },
+      select: {
+        branchId: true,
+      },
+    });
+
+    if (!branch) {
+      throw new BadRequestException(`No branch found for user: ${userId}`);
+    }
+
+    return branch.branchId;
+  }
+
   // * Final transaction to create order in system
   async processOrderTransaction(
-    userId: string,
+    sellerId: string,
+    branchId: string,
     shoppingCart: ShoppingCart,
     total: number,
     detail: OrderItem[],
@@ -99,7 +122,9 @@ export class BranchOrdersService implements Order {
         this.prismaService.order.create({
           data: {
             orderId,
-            userId,
+            userId: sellerId,
+            sellerId,
+            branchId,
             cartId: shoppingCart.cartId,
             total,
             ...createClientOrderDto,
