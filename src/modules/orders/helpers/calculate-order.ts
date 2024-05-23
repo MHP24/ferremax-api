@@ -1,8 +1,9 @@
 import { Product } from '@prisma/client';
-import { Items, OrderCalculation } from '../types';
+import { OrderCalculation } from '../types';
+import { Item } from '../../../common/types';
 
 export const calculateOrder = (
-  items: Items[],
+  items: Item[],
   products: Product[],
 ): OrderCalculation => {
   return items.reduce(

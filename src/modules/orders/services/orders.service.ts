@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { User } from '@prisma/client';
 import { OrdersFactory } from '../factories/orders.factory';
+// * Types
 import { CreateOrderDto, CreateOrderParamsDto } from '../dto';
 import { OrderType } from '../interfaces';
 
@@ -8,6 +9,7 @@ import { OrderType } from '../interfaces';
 export class OrdersService {
   constructor(private readonly ordersFactory: OrdersFactory) {}
 
+  // * Main order creator uses factory of different orders type
   async createOrder(
     user: User,
     orderType: OrderType,

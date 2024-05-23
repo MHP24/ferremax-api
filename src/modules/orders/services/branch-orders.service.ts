@@ -1,32 +1,32 @@
-import { BadRequestException, Injectable, Logger } from '@nestjs/common';
-import { User, ShoppingCart } from '@prisma/client';
+import { BadRequestException, Injectable } from '@nestjs/common';
+// * Types
+import { User } from '@prisma/client';
+import { Order } from '../interfaces';
+import { OrderProcessed } from '../types';
+import { CreateOrderDto, CreateOrderParamsDto } from '.././dto';
+// * Services
 import { PrismaService } from '../../prisma/prisma.service';
-import { IdGeneratorAdapter } from '../../../common/adapters/interfaces';
-import { IdGenerator } from '../../../common/adapters';
 import { ShoppingCartsService } from '../../shopping-carts/shopping-carts.service';
 import { ProductsService } from '../../products/products.service';
 import { StockService } from '../../stock/stock.service';
+import { OrderHandlersService } from './order-handlers.service';
+// * Helpers
 import { calculateOrder } from '.././helpers';
-import { CreateOrderDto, CreateOrderParamsDto } from '.././dto';
-import { Order } from '../interfaces';
-import { Items, OrderItem, OrderProcessed } from '../types';
 
 @Injectable()
 export class BranchOrdersService implements Order {
-  private idGenerator: IdGeneratorAdapter = new IdGenerator();
-  private logger = new Logger(BranchOrdersService.name);
-
   constructor(
     private readonly prismaService: PrismaService,
     private readonly shoppingCartsService: ShoppingCartsService,
     private readonly productsService: ProductsService,
     private readonly stockService: StockService,
+    private readonly orderHandlersService: OrderHandlersService,
   ) {}
 
   async createOrder(
     { id: userId }: User,
     { cartId }: CreateOrderParamsDto,
-    createClientOrderDto: CreateOrderDto,
+    createOrderDto: CreateOrderDto,
   ): Promise<OrderProcessed> {
     // * Get current shopping cart
     const shoppingCart = await this.shoppingCartsService.getUserShoppingCart(
@@ -48,46 +48,24 @@ export class BranchOrdersService implements Order {
 
     // * Stock branch validation (check if all products are from unique branch)
     const branchId = await this.getBranchByUser(userId);
-    await this.validateStockAvailability(shoppingCart.items, branchId);
+    await this.stockService.validateStockAvailability(
+      shoppingCart.items,
+      branchId,
+    );
 
     // * Subtotal for each item calc
     const { total, detail } = calculateOrder(shoppingCart.items, products);
 
     // * *** Order creation process...
-    return this.processOrderTransaction(
+    return this.orderHandlersService.handleOrderCreationTransaction({
       userId,
+      sellerId: userId,
       branchId,
       shoppingCart,
       total,
       detail,
-      createClientOrderDto,
-    );
-  }
-
-  // * Branch stock validation
-  async validateStockAvailability(
-    cartItems: Items[],
-    stockBranchId: string,
-  ): Promise<void> {
-    const productsBranchStock = await Promise.all(
-      cartItems.map(({ product: { productId }, branchId }) =>
-        this.stockService.getProductStockByBranch(productId, branchId),
-      ),
-    );
-
-    const areAllProductsInStock = cartItems.every(
-      ({ product: { productId }, branchId, quantity }) =>
-        productsBranchStock.find(
-          (product) =>
-            product.productId === productId &&
-            product.branchId === branchId &&
-            product.branchId === stockBranchId,
-        )?.quantity >= quantity,
-    );
-
-    if (!areAllProductsInStock) {
-      throw new BadRequestException('Some products are not in stock');
-    }
+      contactInformation: createOrderDto,
+    });
   }
 
   // * Get branch by specific user (workers/sellers cases)
@@ -104,60 +82,5 @@ export class BranchOrdersService implements Order {
     }
 
     return branch.branchId;
-  }
-
-  // * Final transaction to create order in system
-  async processOrderTransaction(
-    sellerId: string,
-    branchId: string,
-    shoppingCart: ShoppingCart,
-    total: number,
-    detail: OrderItem[],
-    createClientOrderDto: CreateOrderDto,
-  ): Promise<OrderProcessed> {
-    try {
-      const orderId = this.idGenerator.id('FER-ORDER');
-
-      const [order] = await this.prismaService.$transaction([
-        this.prismaService.order.create({
-          data: {
-            orderId,
-            userId: sellerId,
-            sellerId,
-            branchId,
-            cartId: shoppingCart.cartId,
-            total,
-            ...createClientOrderDto,
-          },
-        }),
-        this.prismaService.orderItem.createMany({
-          data: detail.map((item) => ({
-            ...item,
-            orderId,
-          })),
-        }),
-      ]);
-
-      await Promise.all(
-        detail.map((item) => this.stockService.discreaseStock(item)),
-      );
-
-      await this.shoppingCartsService.disableShoppingCartById(
-        shoppingCart.cartId,
-      );
-
-      return {
-        orderId,
-        status: order.status,
-        date: order.createdAt,
-        total,
-        detail,
-      };
-    } catch (error) {
-      this.logger.error(error);
-      throw new BadRequestException(
-        'An unexpected error occurred trying to generate the order, try again',
-      );
-    }
   }
 }

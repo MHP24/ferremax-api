@@ -1,6 +1,7 @@
 import { BadRequestException, Injectable, Logger } from '@nestjs/common';
 import { DiscreaseStock, DiscreaseStockOutput } from './types';
 import { PrismaService } from '../prisma/prisma.service';
+import { Item } from '../../common/types';
 
 @Injectable()
 export class StockService {
@@ -115,5 +116,31 @@ export class StockService {
       totalStockDifference,
       branchStockDifference,
     };
+  }
+
+  // * Validate stock availability can handle stock for unique branch
+  async validateStockAvailability(
+    items: Item[],
+    stockBranchId?: string,
+  ): Promise<void> {
+    const productsBranchStock = await Promise.all(
+      items.map(({ product: { productId }, branchId }) =>
+        this.getProductStockByBranch(productId, branchId),
+      ),
+    );
+
+    const areAllProductsInStock = items.every(
+      ({ product: { productId }, branchId, quantity }) =>
+        productsBranchStock.find(
+          (product) =>
+            product.productId === productId &&
+            product.branchId === branchId &&
+            (stockBranchId ? product.branchId === stockBranchId : true),
+        )?.quantity >= quantity,
+    );
+
+    if (!areAllProductsInStock) {
+      throw new BadRequestException('Some products are not in stock');
+    }
   }
 }

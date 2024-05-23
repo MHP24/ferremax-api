@@ -11,6 +11,7 @@ import {
   OrdersService,
   BranchOrdersService,
   ClientOrdersService,
+  OrderHandlersService,
 } from './services';
 import { OrdersFactory } from './factories';
 
@@ -26,6 +27,7 @@ import { OrdersFactory } from './factories';
   providers: [
     OrdersFactory,
     OrdersService,
+    OrderHandlersService,
     ClientOrdersService,
     BranchOrdersService,
   ],
