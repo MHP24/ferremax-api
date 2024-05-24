@@ -1,2 +1,2 @@
 export { PaginationDto } from './pagination.dto';
-export { SlugParamDto } from './slug-param.dto';
+export { SlugDto } from './slug.dto';

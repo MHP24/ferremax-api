@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { PaginationDto, SlugParamDto } from '../../common/dto';
+import { PaginationDto, SlugDto } from '../../common/dto';
 import { ProductFormatted, TProduct } from './types';
 import { formatProduct } from './helpers/format-product';
 
@@ -41,7 +41,7 @@ export class ProductsService {
     };
   }
 
-  async findBySlug({ slug }: SlugParamDto): Promise<ProductFormatted> {
+  async findBySlug({ slug }: SlugDto): Promise<ProductFormatted> {
     const product: TProduct = await this.prismaService.product.findUnique({
       where: {
         slug,

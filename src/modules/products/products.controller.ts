@@ -1,6 +1,6 @@
 import { Controller, Get, Param, Query } from '@nestjs/common';
 import { ProductsService } from './products.service';
-import { PaginationDto, SlugParamDto } from '../../common/dto';
+import { PaginationDto, SlugDto } from '../../common/dto';
 
 @Controller('products')
 export class ProductsController {
@@ -12,7 +12,7 @@ export class ProductsController {
   }
 
   @Get('/slug/:slug')
-  findBySlug(@Param() slugParamDto: SlugParamDto) {
+  findBySlug(@Param() slugParamDto: SlugDto) {
     return this.productsService.findBySlug(slugParamDto);
   }
 }
