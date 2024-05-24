@@ -7,6 +7,7 @@ import { OrdersModule } from './modules/orders/orders.module';
 import { ShoppingCartsModule } from './modules/shopping-carts/shopping-carts.module';
 import { ProductsModule } from './modules/products/products.module';
 import { StockModule } from './modules/stock/stock.module';
+import { FilesModule } from './modules/files/files.module';
 
 @Module({
   imports: [
@@ -17,6 +18,7 @@ import { StockModule } from './modules/stock/stock.module';
     ProductsModule,
     StockModule,
     OrdersModule,
+    FilesModule,
   ],
   controllers: [],
   providers: [],
