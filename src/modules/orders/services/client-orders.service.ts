@@ -32,7 +32,7 @@ export class ClientOrdersService implements Order {
     await this.validatePendingOrder(userId);
 
     // * Get current user shopping cart
-    const shoppingCart = await this.shoppingCartsService.getUserShoppingCart(
+    const shoppingCart = await this.shoppingCartsService.getShoppingCart(
       userId,
       cartId,
     );
