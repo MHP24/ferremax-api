@@ -1,6 +1,8 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { PaginationDto } from '../../common/dto';
+import { PaginationDto, SlugParamDto } from '../../common/dto';
+import { ProductFormatted, TProduct } from './types';
+import { formatProduct } from './helpers/format-product';
 
 @Injectable()
 export class ProductsService {
@@ -37,6 +39,41 @@ export class ProductsService {
         lastPage,
       },
     };
+  }
+
+  async findBySlug({ slug }: SlugParamDto): Promise<ProductFormatted> {
+    const product: TProduct = await this.prismaService.product.findUnique({
+      where: {
+        slug,
+        isActive: true,
+      },
+      select: {
+        productId: true,
+        name: true,
+        slug: true,
+        price: true,
+        stock: true,
+        images: true,
+        description: true,
+        keywords: true,
+        ProductBrand: {
+          select: {
+            name: true,
+          },
+        },
+        ProductCategory: {
+          select: {
+            name: true,
+          },
+        },
+      },
+    });
+
+    if (!product) {
+      throw new NotFoundException(`Product: ${slug} not found`);
+    }
+
+    return formatProduct(product);
   }
 
   // * Find many products by id as array of ids arg
