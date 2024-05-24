@@ -8,10 +8,14 @@ export class ShoppingCartsService {
   constructor(private readonly prismaService: PrismaService) {}
 
   // * Get shopping cart by userId
-  async getUserShoppingCart(userId: string): Promise<ShoppingCart> {
+  async getUserShoppingCart(
+    userId: string,
+    cartId: string,
+  ): Promise<ShoppingCart> {
     const userShoppingCart = await this.prismaService.shoppingCart.findFirst({
       where: {
         userId,
+        cartId,
         isActive: true,
       },
       include: {
@@ -42,8 +46,9 @@ export class ShoppingCartsService {
     const { ShoppingCartItem: items, ...rest } = userShoppingCart;
     return {
       ...rest,
-      items: items.map(({ Product, quantity }) => ({
+      items: items.map(({ Product, quantity, branchId }) => ({
         product: Product,
+        branchId,
         quantity,
       })),
     };
