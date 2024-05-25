@@ -1,7 +1,7 @@
 <h1 align="center">Ferremax API</h1>
 
 <div align="center">
-  <a href="https://mg-hp.com/" target="_blank">
+  <a href="https://ferremax-api.mg-hp.com/api/v1/docs" target="_blank">
     <img src="ferremax-api.jpg" width="200" alt="Ferremax logo" />
   </a>
 
@@ -19,6 +19,7 @@
 ## Table of contents
 - [About this project](#about-this-project)
 - [Setup and installation](#setup-and-installation)
+- [Production demo](#production-demo)
 - [Quick stage demo](#quick-stage-demo)
 - [API Spec & Documentation](#api-spec-documentation)
 
@@ -82,6 +83,10 @@ DB_PASSWORD | String | Password for the PostgreSQL database (can be provided for
 ```bash
   POST to: http://127.0.0.1:PORT/api/v1/seed
 ```
+
+## <a id="production-demo"></a>Production demo 📟
+Demo available at: https://ferremax-api.mg-hp.com/api/v1/docs
+
 
 ## <a id="quick-stage-demo"></a>Quick stage demo ⭐ 
 
