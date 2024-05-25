@@ -147,31 +147,34 @@ export class ShoppingCartsService {
     );
 
     // * Recalc for quantities in shopping cart items
-    productsToAdd.forEach(async (item) => {
+    for (const item of productsToAdd) {
       const product = currentShoppingCart.items.find(
         ({ product, branchId }) =>
           product.productId === item.productId && branchId === item.branchId,
       );
 
-      // * Update quantity
       if (product) {
         await this.updateItemQuantity(
           product.itemId,
           product.quantity + item.quantity,
         );
-        return;
+        continue;
       }
 
-      // * Add the new product
       await this.addItem(
         item.productId,
         item.quantity,
         currentShoppingCart.cartId,
         item.branchId,
       );
-    });
+    }
 
-    return await this.getShoppingCart(user.id, cartDto.cartId);
+    const shoppingCartUpdated = await this.getShoppingCart(
+      user.id,
+      cartDto.cartId,
+    );
+
+    return shoppingCartUpdated;
   }
 
   // * Update existing quantity can be used for + or -
