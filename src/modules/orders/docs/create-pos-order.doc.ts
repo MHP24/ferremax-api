@@ -13,7 +13,7 @@ export const createPosOrderDocumentation = [
   }),
   ApiParam({
     name: 'cartId',
-    example: 'a0f50782-e954-4f17-9c6b-ee59e0de8afa',
+    example: '93110f57-b1c2-41d1-a0c5-96f488f6d297',
     description: 'UUID of the cart',
   }),
   ApiBody({
@@ -29,8 +29,8 @@ export const createPosOrderDocumentation = [
     examples: {
       example1: {
         value: {
-          address: 'Casa entrega cliente #123',
-          email: 'example@mail.com',
+          address: 'Client house #234',
+          email: 'clientferremax@mail.com',
           phoneNumber: '+56930715857',
         },
       },
@@ -74,21 +74,21 @@ export const createPosOrderDocumentation = [
         examples: {
           example1: {
             value: {
-              orderId: 'FER-ORDER-332afc65-69b1-41e3-acb9-3b729bb064f8',
+              orderId: 'FER-ORDER-39e72059-a018-4a11-8c55-e1365dcc2154',
               status: 'PENDING',
-              date: '2024-05-25T00:13:07.731Z',
-              total: 285000,
+              date: '2024-05-25T15:42:47.448Z',
+              total: 260000,
               detail: [
                 {
-                  productId: '61629914-949e-4ebc-b8cd-c8eef685e1fc',
-                  branchId: '0e0121d4-d569-4085-881d-3f4a1f857d35',
-                  quantity: 5,
+                  productId: '8b767270-2b14-4100-8520-a65953d0e708',
+                  branchId: 'eef1c849-68cf-4aab-96b9-b7d675283b3b',
+                  quantity: 4,
                   price: 25000,
-                  subtotal: 125000,
+                  subtotal: 100000,
                 },
                 {
-                  productId: 'd976e5e9-7a36-405e-abc8-6a6b5935879b',
-                  branchId: '0e0121d4-d569-4085-881d-3f4a1f857d35',
+                  productId: 'b792420c-ab75-424c-b5d1-732559a1dd95',
+                  branchId: 'eef1c849-68cf-4aab-96b9-b7d675283b3b',
                   quantity: 2,
                   price: 80000,
                   subtotal: 160000,
@@ -99,6 +99,14 @@ export const createPosOrderDocumentation = [
         },
       },
     },
+  }),
+  ApiResponse({
+    status: 400,
+    description: 'Invalid order (stock availability, branches, etc)',
+  }),
+  ApiResponse({
+    status: 401,
+    description: 'Unauthorized access (JWT Session required)',
   }),
   ApiResponse({
     status: 403,

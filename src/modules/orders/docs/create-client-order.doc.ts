@@ -14,7 +14,7 @@ export const createClientOrderDocumentation = [
   }),
   ApiParam({
     name: 'cartId',
-    example: 'a0f50782-e954-4f17-9c6b-ee59e0de8afa',
+    example: 'ced4380c-fbac-450d-8df5-3ab96a012589',
     description: 'UUID of the cart',
   }),
   ApiBody({
@@ -75,24 +75,24 @@ export const createClientOrderDocumentation = [
         examples: {
           example1: {
             value: {
-              orderId: 'FER-ORDER-332afc65-69b1-41e3-acb9-3b729bb064f8',
+              orderId: 'FER-ORDER-51d300a2-4bd1-457b-a219-fcbba2b9cc82',
               status: 'PENDING',
-              date: '2024-05-25T00:13:07.731Z',
-              total: 285000,
+              date: '2024-05-25T15:43:35.831Z',
+              total: 90000,
               detail: [
                 {
-                  productId: '61629914-949e-4ebc-b8cd-c8eef685e1fc',
-                  branchId: '0e0121d4-d569-4085-881d-3f4a1f857d35',
-                  quantity: 5,
-                  price: 25000,
-                  subtotal: 125000,
+                  productId: '8278ab0e-c71b-4304-9519-402f58bbcde3',
+                  branchId: 'd765d671-7f5c-445e-9b96-3d1ef9ad7e80',
+                  quantity: 3,
+                  price: 20000,
+                  subtotal: 60000,
                 },
                 {
-                  productId: 'd976e5e9-7a36-405e-abc8-6a6b5935879b',
-                  branchId: '0e0121d4-d569-4085-881d-3f4a1f857d35',
+                  productId: '50486796-9fe9-42e7-90f1-968e0282d3bb',
+                  branchId: 'd765d671-7f5c-445e-9b96-3d1ef9ad7e80',
                   quantity: 2,
-                  price: 80000,
-                  subtotal: 160000,
+                  price: 15000,
+                  subtotal: 30000,
                 },
               ],
             },
@@ -100,6 +100,14 @@ export const createClientOrderDocumentation = [
         },
       },
     },
+  }),
+  ApiResponse({
+    status: 400,
+    description: 'Invalid order (stock availability, branches, etc)',
+  }),
+  ApiResponse({
+    status: 401,
+    description: 'Unauthorized access (JWT Session required)',
   }),
   ApiResponse({
     status: 403,
