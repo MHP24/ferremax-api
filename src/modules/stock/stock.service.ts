@@ -1,4 +1,9 @@
-import { BadRequestException, Injectable, Logger } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  Logger,
+  NotFoundException,
+} from '@nestjs/common';
 import { DiscreaseStock, DiscreaseStockOutput } from './types';
 import { PrismaService } from '../prisma/prisma.service';
 import { Item } from '../../common/types';
@@ -11,22 +16,27 @@ export class StockService {
 
   // * Get stock for a single product in a unique branch
   async getProductStockByBranch(productId: string, branchId: string) {
-    const { Product, quantity } =
-      await this.prismaService.productStock.findFirst({
-        where: {
-          productId,
-          branchId,
-        },
-        select: {
-          quantity: true,
-          Product: {
-            select: {
-              productId: true,
-              name: true,
-            },
+    const productStockBranch = await this.prismaService.productStock.findFirst({
+      where: {
+        productId,
+        branchId,
+      },
+      select: {
+        quantity: true,
+        Product: {
+          select: {
+            productId: true,
+            name: true,
           },
         },
-      });
+      },
+    });
+
+    if (!productStockBranch) {
+      throw new NotFoundException('Product stock branch not found');
+    }
+
+    const { Product, quantity } = productStockBranch;
 
     return {
       ...Product,

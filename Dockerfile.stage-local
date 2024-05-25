@@ -16,7 +16,8 @@ FROM base AS runner
 WORKDIR /app
 COPY --from=build /app/node_modules ./node_modules
 COPY --from=build /app/dist ./dist
-COPY --from=build /app/prisma ./prisma
+COPY --from=build /app/prisma/schema.prisma ./prisma/schema.prisma
+COPY ./static ./static
 COPY ./package.json ./package.json
 COPY ./docker-stage-entrypoint.sh /docker-stage-entrypoint.sh
 RUN chmod +x /docker-stage-entrypoint.sh
