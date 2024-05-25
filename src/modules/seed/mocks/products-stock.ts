@@ -1,13 +1,9 @@
-import { IdGenerator } from 'src/common/adapters';
 import { productsSeed } from './products';
-import { IdGeneratorAdapter } from 'src/common/adapters/interfaces';
 import { branchesSeed } from './branches';
-
-const idGenerator: IdGeneratorAdapter = new IdGenerator();
 
 export const productsStockSeed = [
   {
-    stockId: idGenerator.id(),
+    stockId: 'fe2317ce-61a4-4e96-96e7-f3b160a87abc',
     productId: productsSeed[0].productId,
     quantity: 50,
     branchId: branchesSeed[1].branchId,
@@ -15,7 +11,7 @@ export const productsStockSeed = [
     updatedAt: new Date(),
   },
   {
-    stockId: idGenerator.id(),
+    stockId: '77455f01-b1a9-4f9c-b701-010aefef22ae',
     productId: productsSeed[0].productId,
     quantity: 50,
     branchId: branchesSeed[2].branchId,
@@ -23,7 +19,7 @@ export const productsStockSeed = [
     updatedAt: new Date(),
   },
   {
-    stockId: idGenerator.id(),
+    stockId: 'a9bc8a3d-a8f0-4430-b77a-0e5f5b03461a',
     productId: productsSeed[0].productId,
     quantity: 50,
     branchId: branchesSeed[3].branchId,
@@ -31,7 +27,7 @@ export const productsStockSeed = [
     updatedAt: new Date(),
   },
   {
-    stockId: idGenerator.id(),
+    stockId: '3a0f38c8-ac14-4782-a802-e47bdaf6dd72',
     productId: productsSeed[1].productId,
     quantity: 100,
     branchId: branchesSeed[1].branchId,
@@ -39,7 +35,7 @@ export const productsStockSeed = [
     updatedAt: new Date(),
   },
   {
-    stockId: idGenerator.id(),
+    stockId: 'f17b1ea4-64c9-4b17-9751-aba60a92b809',
     productId: productsSeed[1].productId,
     quantity: 100,
     branchId: branchesSeed[2].branchId,
@@ -47,7 +43,7 @@ export const productsStockSeed = [
     updatedAt: new Date(),
   },
   {
-    stockId: idGenerator.id(),
+    stockId: '5449f355-8f38-4044-9727-2dbc2f3ef022',
     productId: productsSeed[1].productId,
     quantity: 100,
     branchId: branchesSeed[3].branchId,
@@ -55,7 +51,7 @@ export const productsStockSeed = [
     updatedAt: new Date(),
   },
   {
-    stockId: idGenerator.id(),
+    stockId: '8b1b8b8c-a8b5-4fb2-8b14-e9e245510b0b',
     productId: productsSeed[2].productId,
     quantity: 30,
     branchId: branchesSeed[1].branchId,
@@ -63,7 +59,7 @@ export const productsStockSeed = [
     updatedAt: new Date(),
   },
   {
-    stockId: idGenerator.id(),
+    stockId: '3770a69e-f7c4-49ce-862d-a541409af0fc',
     productId: productsSeed[2].productId,
     quantity: 30,
     branchId: branchesSeed[2].branchId,
@@ -71,7 +67,7 @@ export const productsStockSeed = [
     updatedAt: new Date(),
   },
   {
-    stockId: idGenerator.id(),
+    stockId: '63bee116-63f2-426e-b342-c6607e2734e3',
     productId: productsSeed[2].productId,
     quantity: 30,
     branchId: branchesSeed[3].branchId,
@@ -79,7 +75,7 @@ export const productsStockSeed = [
     updatedAt: new Date(),
   },
   {
-    stockId: idGenerator.id(),
+    stockId: 'b6ec5295-bcaf-4fb3-861f-58bc150be53d',
     productId: productsSeed[3].productId,
     quantity: 20,
     branchId: branchesSeed[1].branchId,
@@ -87,7 +83,7 @@ export const productsStockSeed = [
     updatedAt: new Date(),
   },
   {
-    stockId: idGenerator.id(),
+    stockId: '71f7ecb1-76fd-42a7-8f88-5a3bf7849680',
     productId: productsSeed[3].productId,
     quantity: 20,
     branchId: branchesSeed[2].branchId,
@@ -95,7 +91,7 @@ export const productsStockSeed = [
     updatedAt: new Date(),
   },
   {
-    stockId: idGenerator.id(),
+    stockId: 'cac141b4-375a-4b7b-8674-a1a22e96fc4d',
     productId: productsSeed[3].productId,
     quantity: 20,
     branchId: branchesSeed[3].branchId,
@@ -103,7 +99,7 @@ export const productsStockSeed = [
     updatedAt: new Date(),
   },
   {
-    stockId: idGenerator.id(),
+    stockId: '11bfc107-9edf-4af6-8a97-e9cc67b69070',
     productId: productsSeed[4].productId,
     quantity: 15,
     branchId: branchesSeed[1].branchId,
@@ -111,7 +107,7 @@ export const productsStockSeed = [
     updatedAt: new Date(),
   },
   {
-    stockId: idGenerator.id(),
+    stockId: '4dba927b-5f02-4303-930f-bf5f1be505c6',
     productId: productsSeed[4].productId,
     quantity: 15,
     branchId: branchesSeed[2].branchId,
@@ -119,7 +115,7 @@ export const productsStockSeed = [
     updatedAt: new Date(),
   },
   {
-    stockId: idGenerator.id(),
+    stockId: '6e3580fa-6a28-41df-b21b-7bda64089b1b',
     productId: productsSeed[4].productId,
     quantity: 15,
     branchId: branchesSeed[3].branchId,
@@ -127,7 +123,7 @@ export const productsStockSeed = [
     updatedAt: new Date(),
   },
   {
-    stockId: idGenerator.id(),
+    stockId: '8fbd9373-bfc8-4bce-9f52-f28b24dda6e7',
     productId: productsSeed[5].productId,
     quantity: 100,
     branchId: branchesSeed[1].branchId,
@@ -135,7 +131,7 @@ export const productsStockSeed = [
     updatedAt: new Date(),
   },
   {
-    stockId: idGenerator.id(),
+    stockId: '96199ec1-0e62-409c-a680-71788bb70fd5',
     productId: productsSeed[5].productId,
     quantity: 100,
     branchId: branchesSeed[2].branchId,
@@ -143,7 +139,7 @@ export const productsStockSeed = [
     updatedAt: new Date(),
   },
   {
-    stockId: idGenerator.id(),
+    stockId: '2cb11e0a-30b9-42e1-b599-fecf315417de',
     productId: productsSeed[5].productId,
     quantity: 100,
     branchId: branchesSeed[3].branchId,
@@ -151,7 +147,7 @@ export const productsStockSeed = [
     updatedAt: new Date(),
   },
   {
-    stockId: idGenerator.id(),
+    stockId: 'b515f075-1939-463d-adf7-dfc165c972ad',
     productId: productsSeed[6].productId,
     quantity: 200,
     branchId: branchesSeed[1].branchId,
@@ -159,7 +155,7 @@ export const productsStockSeed = [
     updatedAt: new Date(),
   },
   {
-    stockId: idGenerator.id(),
+    stockId: 'b8db43a6-5e6d-453a-8f17-6b25558294da',
     productId: productsSeed[6].productId,
     quantity: 200,
     branchId: branchesSeed[2].branchId,
@@ -167,7 +163,7 @@ export const productsStockSeed = [
     updatedAt: new Date(),
   },
   {
-    stockId: idGenerator.id(),
+    stockId: 'a860386a-c1a2-4e9e-aa63-34962e6bcc78',
     productId: productsSeed[6].productId,
     quantity: 200,
     branchId: branchesSeed[3].branchId,
@@ -175,7 +171,7 @@ export const productsStockSeed = [
     updatedAt: new Date(),
   },
   {
-    stockId: idGenerator.id(),
+    stockId: '14b5a8fb-82f7-4c30-83a9-529836cf74e2',
     productId: productsSeed[7].productId,
     quantity: 50,
     branchId: branchesSeed[1].branchId,
@@ -183,7 +179,7 @@ export const productsStockSeed = [
     updatedAt: new Date(),
   },
   {
-    stockId: idGenerator.id(),
+    stockId: 'dc79b358-bb11-429d-a861-0a3798029b18',
     productId: productsSeed[7].productId,
     quantity: 50,
     branchId: branchesSeed[2].branchId,
@@ -191,7 +187,7 @@ export const productsStockSeed = [
     updatedAt: new Date(),
   },
   {
-    stockId: idGenerator.id(),
+    stockId: '08e64fc1-1e1f-4a3c-9fef-1f088cec280d',
     productId: productsSeed[7].productId,
     quantity: 50,
     branchId: branchesSeed[3].branchId,
@@ -199,7 +195,7 @@ export const productsStockSeed = [
     updatedAt: new Date(),
   },
   {
-    stockId: idGenerator.id(),
+    stockId: '306b7190-16bd-4f0a-8d65-4dcb08186c8b',
     productId: productsSeed[8].productId,
     quantity: 100,
     branchId: branchesSeed[1].branchId,
@@ -207,7 +203,7 @@ export const productsStockSeed = [
     updatedAt: new Date(),
   },
   {
-    stockId: idGenerator.id(),
+    stockId: '850a8484-cc88-4c9a-a426-92ab8aa40926',
     productId: productsSeed[8].productId,
     quantity: 100,
     branchId: branchesSeed[2].branchId,
@@ -215,7 +211,7 @@ export const productsStockSeed = [
     updatedAt: new Date(),
   },
   {
-    stockId: idGenerator.id(),
+    stockId: 'ba6cca13-8715-4331-a6e2-290219fd5896',
     productId: productsSeed[8].productId,
     quantity: 100,
     branchId: branchesSeed[3].branchId,

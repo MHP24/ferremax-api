@@ -13,7 +13,7 @@ export const addToCartDocumentation = [
   }),
   ApiParam({
     name: 'cartId',
-    example: 'a0f50782-e954-4f17-9c6b-ee59e0de8afa',
+    example: 'ced4380c-fbac-450d-8df5-3ab96a012589',
     description: 'UUID of the cart',
   }),
   ApiBody({
@@ -40,9 +40,14 @@ export const addToCartDocumentation = [
         value: {
           products: [
             {
-              productId: '61629914-949e-4ebc-b8cd-c8eef685e1fc',
-              quantity: 2,
-              branchId: '0e0121d4-d569-4085-881d-3f4a1f857d35',
+              productId: '66631165-1870-41fe-b153-03790dcb9021',
+              quantity: 7,
+              branchId: '3ede6d7d-91a0-4bb8-89ae-470dfec9f924',
+            },
+            {
+              productId: 'b792420c-ab75-424c-b5d1-732559a1dd95',
+              quantity: 1,
+              branchId: '3ede6d7d-91a0-4bb8-89ae-470dfec9f924',
             },
           ],
         },
@@ -110,6 +115,14 @@ export const addToCartDocumentation = [
         },
       },
     },
+  }),
+  ApiResponse({
+    status: 400,
+    description: 'Invalid branch or product',
+  }),
+  ApiResponse({
+    status: 401,
+    description: 'Unauthorized access (JWT Session required)',
   }),
   ApiResponse({
     status: 404,

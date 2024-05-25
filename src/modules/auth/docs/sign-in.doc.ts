@@ -55,4 +55,8 @@ export const signInDocumentation = [
       },
     },
   }),
+  ApiResponse({
+    status: 400,
+    description: 'Invalid credentials',
+  }),
 ];

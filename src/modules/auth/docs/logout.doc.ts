@@ -19,4 +19,8 @@ export const logoutDocumentation = [
       },
     },
   }),
+  ApiResponse({
+    status: 401,
+    description: 'Unauthorized access (JWT Session required)',
+  }),
 ];
