@@ -4,12 +4,21 @@ import { Auth, GetUser } from '../auth/decorators';
 import { CreateOrderDto, CreateOrderParamsDto } from './dto';
 import { OrdersService } from './services/orders.service';
 import { OrderType } from './interfaces';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { Swagger } from 'src/common/swagger/decorators';
+import {
+  createClientOrderDocumentation,
+  createPosOrderDocumentation,
+} from './docs';
 
+@ApiTags('orders')
+@ApiBearerAuth()
 @Controller('orders')
 export class OrdersController {
   constructor(private readonly ordersService: OrdersService) {}
 
   @Post('/create-ecommerce-order/:cartId')
+  @Swagger(createClientOrderDocumentation)
   @Auth(ValidRoles.user)
   createClientOrder(
     @GetUser() user: User,
@@ -25,6 +34,7 @@ export class OrdersController {
   }
 
   @Post('/create-pos-order/:cartId')
+  @Swagger(createPosOrderDocumentation)
   @Auth(ValidRoles.seller)
   createBranchOrder(
     @GetUser() user: User,
