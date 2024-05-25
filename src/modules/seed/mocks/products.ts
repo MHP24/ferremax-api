@@ -6,13 +6,13 @@ import { productCategoriesSeed } from './product-categories';
 const idGenerator: IdGeneratorAdapter = new IdGenerator();
 
 export const productsSeed = [
-  // Herramientas Manuales
+  // * Herramientas Manuales
   {
     productId: idGenerator.id(),
     name: 'Martillo',
     slug: 'martillo',
     price: 20000,
-    stock: 50,
+    stock: null,
     images: ['martillo.jpg'],
     description: 'Martillo de alta calidad.',
     keywords: ['martillo', 'herramienta manual'],
@@ -25,7 +25,7 @@ export const productsSeed = [
     name: 'Destornillador',
     slug: 'destornillador',
     price: 15000,
-    stock: 100,
+    stock: null,
     images: ['destornillador.jpg'],
     description: 'Destornillador con mango ergonómico.',
     keywords: ['destornillador', 'herramienta manual'],
@@ -38,7 +38,7 @@ export const productsSeed = [
     name: 'Llave Inglesa',
     slug: 'llave-inglesa',
     price: 25000,
-    stock: 30,
+    stock: null,
     images: ['llave-inglesa.jpg'],
     description: 'Llave inglesa ajustable de alta resistencia.',
     keywords: ['llave inglesa', 'herramienta manual'],
@@ -47,13 +47,13 @@ export const productsSeed = [
     isActive: true,
   },
 
-  // Herramientas Eléctricas
+  // * Herramientas Eléctricas
   {
     productId: idGenerator.id(),
     name: 'Taladro Eléctrico',
     slug: 'taladro-electrico',
     price: 80000,
-    stock: 20,
+    stock: null,
     images: ['taladro-electrico.jpg'],
     description: 'Taladro eléctrico de gran potencia.',
     keywords: ['taladro', 'herramienta eléctrica'],
@@ -66,7 +66,7 @@ export const productsSeed = [
     name: 'Sierra Eléctrica',
     slug: 'sierra-electrica',
     price: 120000,
-    stock: 15,
+    stock: null,
     images: ['sierra-electrica.jpg'],
     description: 'Sierra eléctrica para cortes precisos.',
     keywords: ['sierra', 'herramienta eléctrica'],
@@ -75,13 +75,13 @@ export const productsSeed = [
     isActive: true,
   },
 
-  // Materiales de Construcción - Materiales Básicos
+  // * Materiales de Construcción - Materiales Básicos
   {
     productId: idGenerator.id(),
     name: 'Cemento',
     slug: 'cemento',
     price: 30000,
-    stock: 100,
+    stock: null,
     images: ['cemento.jpg'],
     description: 'Cemento de alta calidad para construcciones sólidas.',
     keywords: ['cemento', 'material básico', 'construcción'],
@@ -94,7 +94,7 @@ export const productsSeed = [
     name: 'Arena',
     slug: 'arena',
     price: 15000,
-    stock: 200,
+    stock: null,
     images: ['arena.jpg'],
     description: 'Arena fina para mezclas de construcción.',
     keywords: ['arena', 'material básico', 'construcción'],
@@ -103,13 +103,13 @@ export const productsSeed = [
     isActive: true,
   },
 
-  // Equipos de Seguridad
+  // * Equipos de Seguridad
   {
     productId: idGenerator.id(),
     name: 'Casco de Seguridad',
     slug: 'casco-seguridad',
     price: 25000,
-    stock: 50,
+    stock: null,
     images: ['casco-seguridad.jpg'],
     description: 'Casco de seguridad resistente para trabajos en altura.',
     keywords: ['casco', 'equipo de seguridad'],
@@ -122,7 +122,7 @@ export const productsSeed = [
     name: 'Guantes de Protección',
     slug: 'guantes-proteccion',
     price: 10000,
-    stock: 100,
+    stock: null,
     images: ['guantes-proteccion.jpg'],
     description: 'Guantes de protección para trabajos manuales.',
     keywords: ['guantes', 'equipo de seguridad'],

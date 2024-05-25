@@ -1,6 +1,7 @@
 import { ValidRoles } from '@prisma/client';
 import { IdGenerator } from '../../../common/adapters';
 import { IdGeneratorAdapter } from '../../../common/adapters/interfaces';
+import { branchesSeed } from './branches';
 
 const idGenerator: IdGeneratorAdapter = new IdGenerator();
 
@@ -13,9 +14,10 @@ export const usersSeed = [
   },
   {
     id: idGenerator.id(),
-    email: 'user2@example.com',
-    password: 'password456',
-    roles: [ValidRoles.user],
+    email: 'seller@example.com',
+    password: 'password123',
+    branchId: branchesSeed[2].branchId,
+    roles: [ValidRoles.seller],
   },
   {
     id: idGenerator.id(),
