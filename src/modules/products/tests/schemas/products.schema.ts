@@ -15,3 +15,8 @@ export const productSchema = joi.object({
   createdAt: joi.date().required(),
   updatedAt: joi.date().required(),
 });
+
+export const productsValidationSchema = joi
+  .array()
+  .items(productSchema)
+  .required();

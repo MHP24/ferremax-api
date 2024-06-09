@@ -4,7 +4,7 @@ import * as request from 'supertest';
 import { ProductsService } from '../../products.service';
 import { ProductsModule } from '../../products.module';
 import { envs } from '../../../../common/config';
-import { productsValidationSchema } from '../schemas/products-validation-schema';
+import { productsValidationSchema } from '../schemas';
 
 describe('[Integration] products.service.ts', () => {
   let app: INestApplication;
