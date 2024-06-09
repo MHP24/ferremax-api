@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { INestApplication, NotFoundException } from '@nestjs/common';
+import { INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
 import { ProductsService } from '../../products.service';
 import { ProductsModule } from '../../products.module';
@@ -9,6 +9,7 @@ import { productsValidationSchema } from '../schemas';
 describe('[Integration] products.service.ts', () => {
   let app: INestApplication;
   let productsService: ProductsService;
+  const baseUrl = `http://127.0.0.1:${envs.port}`;
 
   // * Modules and services initialization
   beforeEach(async () => {
@@ -23,28 +24,32 @@ describe('[Integration] products.service.ts', () => {
 
   // * Seed data generation
   beforeAll(async () => {
-    await request(`http://127.0.0.1:${envs.port}`)
-      .post('/api/v1/seed')
-      .expect(201);
+    await request(baseUrl).post('/api/v1/seed').expect(201);
   });
 
   // * Tests...
   it('Should return a list of 5 products', async () => {
-    const products = await productsService.findAll({ limit: 5, page: 1 });
-    expect(products.data).toHaveLength(5);
+    const response = await request(baseUrl)
+      .get('/api/v1/products')
+      .query({ limit: 5, page: 1 })
+      .expect(200);
+
+    expect(response.body.data).toHaveLength(5);
   });
 
   it('Should return a list of 0 products', async () => {
-    const products = await productsService.findAll({ limit: 9, page: 999 });
-    expect(products.data).toHaveLength(0);
+    const response = await request(baseUrl)
+      .get('/api/v1/products')
+      .query({ limit: 9, page: 999 })
+      .expect(200);
+
+    expect(response.body.data).toHaveLength(0);
   });
 
   it('Should throw NotFoundException', async () => {
-    await expect(
-      productsService.findBySlug({
-        slug: 'undefined-product-slug',
-      }),
-    ).rejects.toThrow(NotFoundException);
+    await request(baseUrl)
+      .get('/api/v1/products/slug/undefined-product-slug')
+      .expect(404);
   });
 
   it('Should return a product and satisfy Product model', async () => {
