@@ -49,7 +49,7 @@ export const getProductBySlugDocumentation = [
         examples: {
           example1: {
             value: {
-              id: 'f8163496-f65e-4135-882c-5ef710cfb194',
+              id: '8278ab0e-c71b-4304-9519-402f58bbcde3',
               category: 'Herramientas Manuales',
               brand: 'Stanley',
               name: 'Martillo',
@@ -64,6 +64,10 @@ export const getProductBySlugDocumentation = [
         },
       },
     },
+  }),
+  ApiResponse({
+    status: 400,
+    description: 'Invalid slug format (regex ^[a-z]+(?:-[a-z]+)*$)',
   }),
   ApiResponse({
     status: 404,

@@ -39,4 +39,8 @@ export const refreshDocumentation = [
       },
     },
   }),
+  ApiResponse({
+    status: 403,
+    description: 'Unauthorized access (JWT Session required)',
+  }),
 ];

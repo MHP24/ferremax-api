@@ -31,6 +31,11 @@ export const createCartDocumentation = [
   }),
   ApiResponse({
     status: 400,
-    description: 'User already has a shopping cart (users, clients only)',
+    description:
+      'User already has a shopping cart (users, clients only can have this error. Multi cart for sellers)',
+  }),
+  ApiResponse({
+    status: 401,
+    description: 'Unauthorized access (JWT Session required)',
   }),
 ];

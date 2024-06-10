@@ -46,4 +46,8 @@ export const signUpDocumentation = [
       },
     },
   }),
+  ApiResponse({
+    status: 400,
+    description: 'Invalid credentials',
+  }),
 ];
