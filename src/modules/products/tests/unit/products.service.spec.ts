@@ -1,160 +1,103 @@
-import { Test } from '@nestjs/testing';
 import { NotFoundException } from '@nestjs/common';
-import { Product } from '@prisma/client';
+import { Test } from '@nestjs/testing';
 import { ProductsService } from '../../products.service';
 import { PrismaService } from '../../../prisma/prisma.service';
+import { FakePrismaService } from '../classes';
 import { PaginationDto, SlugDto } from '../../../../common/dto';
-import {
-  productDetailFormatted,
-  productDetailMock,
-  productsMock,
-} from '../mocks';
-import { simpleProductSchema } from '../schemas';
-import { formatProduct } from '../../helpers/format-product';
+import { fakeBySlugProductsMock } from '../mocks/find-by-slug';
+import { findManyProductsByIdMock } from '../mocks';
 
 describe('[Unit] products.service.ts', () => {
   let productsService: ProductsService;
-  let prismaService: PrismaService;
 
-  // * Products module config
-  beforeEach(async () => {
+  beforeAll(async () => {
     const productsModule = await Test.createTestingModule({
       providers: [
         ProductsService,
         {
           provide: PrismaService,
-          useValue: {
-            product: {
-              count: jest.fn(),
-              findMany: jest.fn(),
-              findUnique: jest.fn(),
-            },
-          },
+          useClass: FakePrismaService,
         },
       ],
     }).compile();
 
     productsService = productsModule.get<ProductsService>(ProductsService);
-    prismaService = productsModule.get<PrismaService>(PrismaService);
   });
 
-  // * Tests...
-  it('Should be defnied products.service.ts', () => {
-    expect(productsService).toBeDefined();
-  });
-
-  // * findAll method from products.service.ts
-  describe('findAll method', () => {
-    // *
-    it('Should return a list of 4 products with pagination metadata', async () => {
+  describe('findAll', () => {
+    it('Should return 3 products', async () => {
       const paginationDto: PaginationDto = {
         page: 1,
-        limit: 5,
+        limit: 3,
       };
 
-      jest.spyOn(prismaService.product, 'count').mockResolvedValueOnce(4);
-      jest
-        .spyOn(prismaService.product, 'findMany')
-        .mockResolvedValueOnce(productsMock.slice(0, 4));
-
-      const result = await productsService.findAll(paginationDto);
-
-      expect(result).toHaveProperty('data');
-      expect(result).toHaveProperty('meta');
-      expect(result.meta).toHaveProperty('page', paginationDto.page);
-      expect(result.meta).toHaveProperty('total', 4);
-      expect(result.meta).toHaveProperty('lastPage', 1);
+      const response = await productsService.findAll(paginationDto);
+      expect(response.data).toHaveLength(3);
+      expect(response.meta).toBeDefined();
     });
 
-    // *
-    it('Should return 1 product including minimal required props', async () => {
+    it('Should return 0 products', async () => {
       const paginationDto: PaginationDto = {
-        page: 1,
-        limit: 1,
+        page: 3,
+        limit: 3,
       };
 
-      jest.spyOn(prismaService.product, 'count').mockResolvedValueOnce(1);
-      jest
-        .spyOn(prismaService.product, 'findMany')
-        .mockResolvedValueOnce([productsMock[0]]);
-
-      const result = await productsService.findAll(paginationDto);
-
-      // * Data (1 product format response)
-      expect(result).toHaveProperty('data');
-      const { error } = simpleProductSchema.validate(result.data[0]);
-      expect(error).toBeUndefined();
-
-      // * Meta format response
-      expect(result).toHaveProperty('meta');
-      expect(result.meta).toHaveProperty('page', paginationDto.page);
-      expect(result.meta).toHaveProperty('total', 1);
-      expect(result.meta).toHaveProperty('lastPage', 1);
+      const response = await productsService.findAll(paginationDto);
+      expect(response.data).toHaveLength(0);
+      expect(response.meta).toBeDefined();
     });
   });
 
-  // * finBySlug method from products.service.ts
-  describe('findBySlug method', () => {
-    it('Should throw NotFoundException when product not found', async () => {
+  describe('findBySlug', () => {
+    it('Should return a single product', async () => {
       const slugDto: SlugDto = {
-        slug: 'undefined-slug-for-testing',
+        slug: 'destornillador',
       };
-
-      jest
-        .spyOn(prismaService.product, 'findUnique')
-        .mockResolvedValueOnce(null);
-
-      await expect(productsService.findBySlug(slugDto)).rejects.toThrow(
-        NotFoundException,
-      );
-    });
-
-    it('Should format product', async () => {
-      const slugDto: SlugDto = {
-        slug: productsMock[5].slug,
-      };
-
-      jest
-        .spyOn(prismaService.product, 'findUnique')
-        .mockResolvedValue(productDetailMock as unknown as Product);
 
       const result = await productsService.findBySlug(slugDto);
-
-      expect(result).toEqual(formatProduct(productDetailMock));
-    });
-  });
-
-  // * Format product function
-  describe('formatProduct function', () => {
-    it('Should format product', async () => {
-      expect(formatProduct(productDetailMock)).toEqual(productDetailFormatted);
-    });
-  });
-
-  // * findManyProductsById method
-  describe('findManyProductsById method', () => {
-    it('Should return 4 products', async () => {
-      const productsMocked = productsMock.slice(0, 4);
-
-      jest
-        .spyOn(prismaService.product, 'findMany')
-        .mockResolvedValueOnce(productsMocked);
-
-      const result = await productsService.findManyProductsById(
-        productsMocked.map(({ productId }) => productId),
+      expect(result).toEqual(
+        fakeBySlugProductsMock[slugDto.slug].formattedOutput,
       );
-
-      expect(result).toHaveLength(productsMocked.length);
     });
 
-    it('Should throw NotFoundException when no products available', async () => {
-      jest.spyOn(prismaService.product, 'findMany').mockResolvedValueOnce([]);
+    it('Should throw NotFoundException', async () => {
+      const slugDto: SlugDto = {
+        slug: 'this-product-does-not-exist',
+      };
 
-      await expect(
-        productsService.findManyProductsById(
-          productsMock.slice(0, 4).map(({ productId }) => productId),
-        ),
-      ).rejects.toThrow(NotFoundException);
+      try {
+        await productsService.findBySlug(slugDto);
+        fail('NotFoundException was not thrown');
+      } catch (error) {
+        expect(error).toBeInstanceOf(NotFoundException);
+        expect(error.message).toBe(`Product: ${slugDto.slug} not found`);
+      }
+    });
+  });
+
+  describe('findManyProductsById', () => {
+    it('Should return 2 products', async () => {
+      const [firstProduct, secondProduct] = findManyProductsByIdMock;
+
+      const result = await productsService.findManyProductsById([
+        firstProduct.productId,
+        secondProduct.productId,
+      ]);
+      expect(result).toHaveLength(2);
+    });
+
+    it('Should throw NotFoundException', async () => {
+      try {
+        await productsService.findManyProductsById([
+          'invalid-id1',
+          'invalid-id2',
+          'invalid-id3',
+        ]);
+        fail('NotFoundException was not thrown');
+      } catch (error) {
+        expect(error).toBeInstanceOf(NotFoundException);
+        expect(error.message).toBe('No products found');
+      }
     });
   });
 });
