@@ -14,7 +14,6 @@ export class FilesController {
   @Get('/:directory/:mimeType/:file')
   @Swagger(getFileDoc)
   getFile(@Param() getFileDto: GetFileDto, @Res() res: Response) {
-    console.log({ getFileDto });
     return res.sendFile(this.filesService.getFile(getFileDto));
   }
 }
