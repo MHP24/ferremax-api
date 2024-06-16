@@ -5,6 +5,9 @@ export type ShoppingCart = {
   createdAt: Date;
   updatedAt: Date;
   items: {
+    quantity: number;
+    branchId: string;
+    itemId: string;
     product: {
       isActive: boolean;
       productId: string;
@@ -14,6 +17,16 @@ export type ShoppingCart = {
       stock: number;
       images: string[];
     };
-    quantity: number;
   }[];
+};
+
+export type ProductCartGroup = {
+  productId: string;
+  quantity: number;
+  branchId: string;
+};
+
+export type CreateShoppingCart = {
+  cartId: string;
+  message: string;
 };

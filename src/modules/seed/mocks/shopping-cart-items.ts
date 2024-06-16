@@ -1,3 +1,4 @@
+import { branchesSeed } from './branches';
 import { productsSeed } from './products';
 import { shoppingCartsSeed } from './shopping-carts';
 
@@ -7,6 +8,7 @@ export const shoppingCartItemsSeed = [
     productId: productsSeed[0].productId,
     quantity: 3,
     cartId: shoppingCartsSeed[0].cartId,
+    branchId: branchesSeed[1].branchId,
     createdAt: new Date(),
     updatedAt: new Date(),
   },
@@ -14,6 +16,7 @@ export const shoppingCartItemsSeed = [
     productId: productsSeed[1].productId,
     quantity: 2,
     cartId: shoppingCartsSeed[0].cartId,
+    branchId: branchesSeed[1].branchId,
     createdAt: new Date(),
     updatedAt: new Date(),
   },
@@ -22,6 +25,7 @@ export const shoppingCartItemsSeed = [
     productId: productsSeed[2].productId,
     quantity: 4,
     cartId: shoppingCartsSeed[1].cartId,
+    branchId: branchesSeed[2].branchId,
     createdAt: new Date(),
     updatedAt: new Date(),
   },
@@ -29,13 +33,7 @@ export const shoppingCartItemsSeed = [
     productId: productsSeed[3].productId,
     quantity: 2,
     cartId: shoppingCartsSeed[1].cartId,
-    createdAt: new Date(),
-    updatedAt: new Date(),
-  },
-  {
-    productId: productsSeed[4].productId,
-    quantity: 1,
-    cartId: shoppingCartsSeed[1].cartId,
+    branchId: branchesSeed[2].branchId,
     createdAt: new Date(),
     updatedAt: new Date(),
   },

@@ -1,0 +1,25 @@
+version: '3.8'
+
+services:
+  ferremax_api:
+    image: ghcr.io/mhp24/ferremax_api:latest
+    container_name: prd_ferremax_api
+    restart: always
+    env_file:
+      - .env
+    ports:
+      - ${PORT}:${PORT}
+    networks:
+      - prd_ferremax_api_network
+    deploy:
+      resources:
+        limits:
+          cpus: '0.4'
+          memory: 512M
+        reservations:
+          cpus: '0.4'
+          memory: 512M
+
+networks:
+  prd_ferremax_api_network:
+    driver: bridge
