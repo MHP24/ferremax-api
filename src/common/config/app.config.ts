@@ -10,6 +10,7 @@ interface EnvVars {
   JWT_EXPIRE_TEXT: string;
   JWT_REFRESH_EXPIRE_TEXT: string;
   JWT_EXPIRE_SECONDS: number;
+  STATIC_FILE_PATH: string;
 }
 
 const envSchema = joi
@@ -21,6 +22,7 @@ const envSchema = joi
     JWT_EXPIRE_TEXT: joi.string().required(),
     JWT_REFRESH_EXPIRE_TEXT: joi.string().required(),
     JWT_EXPIRE_SECONDS: joi.number().required(),
+    STATIC_FILE_PATH: joi.string().required(),
   })
   .unknown(true);
 
@@ -39,4 +41,5 @@ export const envs = {
   jwtExpireText: envVars.JWT_EXPIRE_TEXT,
   jwtRefreshExpireText: envVars.JWT_REFRESH_EXPIRE_TEXT,
   jwtExpireSeconds: envVars.JWT_EXPIRE_SECONDS,
+  staticFilePath: envVars.STATIC_FILE_PATH,
 };
