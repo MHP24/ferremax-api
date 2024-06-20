@@ -1,5 +1,5 @@
 import { JwtSignOptions } from '@nestjs/jwt';
-import { Hasher } from '../../../../common/adapters';
+import { Hasher } from '../../../../../common/adapters';
 
 export class FakeJWTService {
   private hasher = new Hasher();
