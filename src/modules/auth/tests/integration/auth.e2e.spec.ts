@@ -26,11 +26,17 @@ describe('[Integration] Auth', () => {
     await app.init();
 
     prismaService = appModule.get<PrismaService>(PrismaService);
-    await request(app.getHttpServer()).post('/seed');
   });
 
   afterAll(async () => {
     await app.close();
+  });
+
+  beforeEach(async () => {
+    await prismaService.$transaction([
+      prismaService.logAccess.deleteMany({}),
+      prismaService.user.deleteMany({}),
+    ]);
   });
 
   describe('/auth/sign-up (POST)', () => {
