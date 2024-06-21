@@ -3,7 +3,7 @@ import { JwtService } from '@nestjs/jwt';
 import { UnauthorizedException } from '@nestjs/common';
 import { AuthService } from '../../auth.service';
 import { PrismaService } from '../../../prisma/prisma.service';
-import { FakeJWTService, FakePrismaService } from '../classes';
+import { FakeJWTService, FakePrismaService } from './classes';
 import { SignUpUserDto } from '../../dto';
 import { Hasher } from '../../../../common/adapters';
 import { HasherAdapter } from '../../../../common/adapters/interfaces';
@@ -15,7 +15,7 @@ import {
   userCredentialsMock,
   userServiceMock,
   usersMock,
-} from '../mocks';
+} from './mocks';
 
 describe('[Unit] auth.service.ts', () => {
   let authService: AuthService;
