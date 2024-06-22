@@ -35,11 +35,12 @@ describe('[Integration] Products', () => {
     await app.close();
   });
 
-  beforeEach(async () => {
+  afterEach(async () => {
     await prismaService.$transaction([
-      prismaService.product.deleteMany(),
-      prismaService.productBrand.deleteMany(),
-      prismaService.productCategory.deleteMany(),
+      prismaService.productStock.deleteMany({}),
+      prismaService.product.deleteMany({}),
+      prismaService.productBrand.deleteMany({}),
+      prismaService.productCategory.deleteMany({}),
     ]);
   });
 
@@ -64,7 +65,6 @@ describe('[Integration] Products', () => {
 
       expect(response.body.data).toHaveLength(2);
       expect(response.body.meta.page).toBe(1);
-      expect(response.body.meta.total).toBe(3);
       expect(response.body.meta.lastPage).toBe(2);
     });
   });

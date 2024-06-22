@@ -1,1 +1,1 @@
-export { resetDatabae } from './reset-database';
+export { resetDatabase } from './reset-database';

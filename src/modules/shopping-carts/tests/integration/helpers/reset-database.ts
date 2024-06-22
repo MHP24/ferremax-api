@@ -1,6 +1,6 @@
 import { PrismaService } from '../../../../../modules/prisma/prisma.service';
 
-export const resetDatabae = async (prismaService: PrismaService) => {
+export const resetDatabase = async (prismaService: PrismaService) => {
   await prismaService.$transaction([
     // * Delete transaction
     prismaService.logAccess.deleteMany({}),
