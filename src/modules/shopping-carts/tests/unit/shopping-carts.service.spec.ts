@@ -1,6 +1,6 @@
 import { Test } from '@nestjs/testing';
 import { NotFoundException } from '@nestjs/common';
-import { FakePrismaService } from '../classes';
+import { FakePrismaService } from './classes';
 import { PrismaService } from '../../../prisma/prisma.service';
 import { ShoppingCartsService } from '../../shopping-carts.service';
 import { ProductsService } from '../../../products/products.service';
@@ -14,7 +14,7 @@ import {
   productsGroupMock,
   productsMock,
   validUserIdMock,
-} from '../mocks';
+} from './mocks';
 import { groupProducts } from '../../helpers';
 
 describe('[Unit] shopping-carts.service.ts', () => {
