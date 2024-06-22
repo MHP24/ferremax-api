@@ -2,10 +2,10 @@ import { NotFoundException } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import { ProductsService } from '../../products.service';
 import { PrismaService } from '../../../prisma/prisma.service';
-import { FakePrismaService } from '../classes';
+import { FakePrismaService } from './classes';
 import { PaginationDto, SlugDto } from '../../../../common/dto';
-import { fakeBySlugProductsMock } from '../mocks/find-by-slug';
-import { findManyProductsByIdMock } from '../mocks';
+import { fakeBySlugProductsMock } from './mocks/find-by-slug';
+import { findManyProductsByIdMock } from './mocks';
 
 describe('[Unit] products.service.ts', () => {
   let productsService: ProductsService;

@@ -1,5 +1,5 @@
-import { GetFileDto } from '../../dto';
-import { MimeTypes } from '../../interfaces';
+import { GetFileDto } from '../../../dto';
+import { MimeTypes } from '../../../interfaces';
 
 export const validFileMock: GetFileDto = {
   directory: 'products',

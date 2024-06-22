@@ -8,7 +8,7 @@ import {
   invalidFileMock,
   invalidMimeTypeMock,
   validFileMock,
-} from '../mocks';
+} from './mocks';
 
 describe('[Unit] files.service.ts', () => {
   let filesService: FilesService;
