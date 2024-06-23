@@ -26,6 +26,34 @@ describe('[Integration] shopping-carts.spec.ts', () => {
   });
 
   beforeAll(async () => {
+    await prismaService.$transaction([
+      prismaService.shoppingCartItem.deleteMany({}),
+      prismaService.shoppingCart.deleteMany({}),
+      prismaService.productStock.deleteMany({
+        where: { stockId: addToCart.productStockMock.stockId },
+      }),
+      prismaService.product.deleteMany({
+        where: { productId: addToCart.productMock.productId },
+      }),
+      prismaService.productCategory.deleteMany({
+        where: { categoryId: addToCart.categoryMock.categoryId },
+      }),
+      prismaService.branch.deleteMany({
+        where: { branchId: addToCart.branchProductMock.branchId },
+      }),
+      prismaService.productBrand.deleteMany({
+        where: { brandId: addToCart.brandMock.brandId },
+      }),
+      prismaService.logAccess.deleteMany({
+        where: { User: { email: userCredentialsMock.email } },
+      }),
+      prismaService.user.deleteMany({
+        where: { email: userCredentialsMock.email },
+      }),
+    ]);
+  });
+
+  beforeAll(async () => {
     await request(app.getHttpServer())
       .post('/auth/sign-up')
       .send(userCredentialsMock);

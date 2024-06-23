@@ -28,6 +28,25 @@ describe('[Integration] Auth', () => {
     prismaService = appModule.get<PrismaService>(PrismaService);
   });
 
+  beforeAll(async () => {
+    await prismaService.$transaction([
+      prismaService.logAccess.deleteMany({
+        where: { User: { email: signInUserMock.email } },
+      }),
+      prismaService.user.deleteMany({
+        where: {
+          email: {
+            in: [
+              createUserBodyMock.email,
+              repeatedUserBodyMock.email,
+              signInUserMock.email,
+            ],
+          },
+        },
+      }),
+    ]);
+  });
+
   afterAll(async () => {
     await app.close();
   });

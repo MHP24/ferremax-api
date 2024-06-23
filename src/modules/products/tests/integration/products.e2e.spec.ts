@@ -31,6 +31,31 @@ describe('[Integration] Products', () => {
     prismaService = appModule.get<PrismaService>(PrismaService);
   });
 
+  beforeAll(async () => {
+    await prismaService.$transaction([
+      prismaService.product.deleteMany({
+        where: {
+          slug: {
+            in: [
+              productSlugMock.slug,
+              ...getProductsMock.map(({ slug }) => slug),
+            ],
+          },
+        },
+      }),
+      prismaService.productCategory.deleteMany({
+        where: {
+          categoryId: {
+            in: [categoryMock.categoryId, slugCategoryMock.categoryId],
+          },
+        },
+      }),
+      prismaService.productBrand.deleteMany({
+        where: { brandId: { in: [brandMock.brandId, slugBrandMock.brandId] } },
+      }),
+    ]);
+  });
+
   afterAll(async () => {
     await app.close();
   });
