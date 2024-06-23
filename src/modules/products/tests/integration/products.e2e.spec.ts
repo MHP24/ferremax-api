@@ -14,8 +14,9 @@ import {
   slugBrandMock,
   slugCategoryMock,
 } from './mocks';
+import { resetMocks } from './helpers';
 
-describe('[Integration] Products', () => {
+describe('[Integration] products.e2e.spec.ts', () => {
   let app: INestApplication;
   let prismaService: PrismaService;
 
@@ -32,28 +33,7 @@ describe('[Integration] Products', () => {
   });
 
   beforeAll(async () => {
-    await prismaService.$transaction([
-      prismaService.product.deleteMany({
-        where: {
-          slug: {
-            in: [
-              productSlugMock.slug,
-              ...getProductsMock.map(({ slug }) => slug),
-            ],
-          },
-        },
-      }),
-      prismaService.productCategory.deleteMany({
-        where: {
-          categoryId: {
-            in: [categoryMock.categoryId, slugCategoryMock.categoryId],
-          },
-        },
-      }),
-      prismaService.productBrand.deleteMany({
-        where: { brandId: { in: [brandMock.brandId, slugBrandMock.brandId] } },
-      }),
-    ]);
+    await resetMocks(prismaService);
   });
 
   afterAll(async () => {

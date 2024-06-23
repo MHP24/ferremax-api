@@ -11,8 +11,9 @@ import {
   repeatedUserBodyMock,
   signInUserMock,
 } from './mocks';
+import { resetMocks } from './helpers';
 
-describe('[Integration] Auth', () => {
+describe('[Integration] auth.e2e.spec.ts', () => {
   let app: INestApplication;
   let prismaService: PrismaService;
 
@@ -29,22 +30,7 @@ describe('[Integration] Auth', () => {
   });
 
   beforeAll(async () => {
-    await prismaService.$transaction([
-      prismaService.logAccess.deleteMany({
-        where: { User: { email: signInUserMock.email } },
-      }),
-      prismaService.user.deleteMany({
-        where: {
-          email: {
-            in: [
-              createUserBodyMock.email,
-              repeatedUserBodyMock.email,
-              signInUserMock.email,
-            ],
-          },
-        },
-      }),
-    ]);
+    await resetMocks(prismaService);
   });
 
   afterAll(async () => {

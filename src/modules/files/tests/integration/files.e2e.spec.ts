@@ -15,7 +15,7 @@ import {
   validMimeTypeMock,
 } from './mocks';
 
-describe('[Integration] files.spec.ts', () => {
+describe('[Integration] files.e2e.spec.ts', () => {
   let app: INestApplication;
   const imgDirMock = path.resolve(
     envs.staticFilePath,
