@@ -32,13 +32,6 @@ describe('[Integration] Auth', () => {
     await app.close();
   });
 
-  beforeEach(async () => {
-    await prismaService.$transaction([
-      prismaService.logAccess.deleteMany({}),
-      prismaService.user.deleteMany({}),
-    ]);
-  });
-
   describe('/auth/sign-up (POST)', () => {
     it('Should create a new user', async () => {
       const response = await request(app.getHttpServer())

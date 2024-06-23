@@ -4,13 +4,14 @@ import * as request from 'supertest';
 import { AppModule } from '../../../../app.module';
 import { PrismaService } from '../../../prisma/prisma.service';
 import { configureApp } from '../../../../common/tests';
-import { Hasher } from '../../../../common/adapters';
 import { addToCart, userCredentialsMock } from './mocks';
-import { resetDatabase } from './helpers';
+import { Session } from './types';
 
 describe('[Integration] shopping-carts.spec.ts', () => {
   let app: INestApplication;
   let prismaService: PrismaService;
+  let session: Session;
+  let cartId: string;
 
   // * Config
   beforeAll(async () => {
@@ -19,21 +20,20 @@ describe('[Integration] shopping-carts.spec.ts', () => {
     }).compile();
 
     prismaService = appModule.get<PrismaService>(PrismaService);
-
     app = appModule.createNestApplication();
     configureApp(app);
     await app.init();
   });
 
-  // * Credentials creation
   beforeAll(async () => {
-    await resetDatabase(prismaService);
-    await prismaService.user.create({
-      data: {
-        password: await new Hasher().hash(userCredentialsMock.password),
-        email: userCredentialsMock.email,
-      },
-    });
+    await request(app.getHttpServer())
+      .post('/auth/sign-up')
+      .send(userCredentialsMock);
+
+    const access = await request(app.getHttpServer())
+      .post('/auth/sign-in')
+      .send(userCredentialsMock);
+    session = access.body;
   });
 
   afterAll(async () => {
@@ -45,21 +45,12 @@ describe('[Integration] shopping-carts.spec.ts', () => {
       const response = await request(app.getHttpServer()).get(
         '/shopping-carts/my-cart',
       );
-
       expect(response.statusCode).toBe(401);
     });
-
     it('Should throw 404', async () => {
-      const {
-        body: { token },
-      } = await request(app.getHttpServer())
-        .post('/auth/sign-in')
-        .send(userCredentialsMock);
-
       const { body, statusCode } = await request(app.getHttpServer())
         .get('/shopping-carts/my-cart')
-        .set({ authorization: `Bearer ${token.accessToken}` });
-
+        .set({ authorization: `Bearer ${session.token.accessToken}` });
       expect(statusCode).toBe(404);
       expect(body.message).toBe('Shopping cart not found');
     });
@@ -67,20 +58,22 @@ describe('[Integration] shopping-carts.spec.ts', () => {
 
   describe('/shopping-carts (POST)', () => {
     it('Should create a shopping cart', async () => {
-      const {
-        body: { token },
-      } = await request(app.getHttpServer())
-        .post('/auth/sign-in')
-        .send(userCredentialsMock);
-
       const { body, statusCode } = await request(app.getHttpServer())
         .post('/shopping-carts')
-        .set({ authorization: `Bearer ${token.accessToken}` });
+        .set({ authorization: `Bearer ${session.token.accessToken}` });
 
-      await prismaService.shoppingCart.deleteMany({});
+      const shoppingCarts = await prismaService.shoppingCart.findMany({
+        where: {
+          userId: session.user.userId,
+          isActive: true,
+        },
+      });
+
+      cartId = body.cartId;
 
       expect(body.message).toBe('Shopping cart created successfully');
       expect(statusCode).toBe(201);
+      expect(shoppingCarts.length).toBe(1);
       expect(body.cartId.length).toBeGreaterThan(10);
     });
   });
@@ -96,42 +89,14 @@ describe('[Integration] shopping-carts.spec.ts', () => {
         prismaService.productStock.create({ data: addToCart.productStockMock }),
       ]);
 
-      const {
-        body: { token, user },
-      } = await request(app.getHttpServer())
-        .post('/auth/sign-in')
-        .send(userCredentialsMock);
-
-      // * Create shopping cart
-      const {
-        body: { cartId },
-      } = await request(app.getHttpServer())
-        .post('/shopping-carts/')
-        .set({ authorization: `Bearer ${token.accessToken}` });
-
-      const shoppingCarts = await prismaService.shoppingCart.findMany({
-        where: {
-          userId: user.userId,
-          isActive: true,
-        },
-      });
-
-      // * Add it
       const { body, statusCode } = await request(app.getHttpServer())
         .patch(`/shopping-carts/add-to-cart/${cartId}`)
-        .set({ authorization: `Bearer ${token.accessToken}` })
+        .set({ authorization: `Bearer ${session.token.accessToken}` })
         .send({
           products: [addToCart.addToCartProductMock],
         });
 
-      await prismaService.$transaction([
-        prismaService.shoppingCartItem.deleteMany({}),
-        prismaService.shoppingCart.deleteMany({}),
-      ]);
-
-      expect(shoppingCarts).toHaveLength(1);
       expect(body.items).toHaveLength(1);
-      expect(body.cartId).toBe(cartId);
       expect(statusCode).toBe(200);
     });
   });

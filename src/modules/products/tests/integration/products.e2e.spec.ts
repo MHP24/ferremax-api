@@ -35,15 +35,6 @@ describe('[Integration] Products', () => {
     await app.close();
   });
 
-  afterEach(async () => {
-    await prismaService.$transaction([
-      prismaService.productStock.deleteMany({}),
-      prismaService.product.deleteMany({}),
-      prismaService.productBrand.deleteMany({}),
-      prismaService.productCategory.deleteMany({}),
-    ]);
-  });
-
   describe('/products (GET)', () => {
     it('Should get a paginated list of 2 products', async () => {
       await prismaService.$transaction([

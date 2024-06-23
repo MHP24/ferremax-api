@@ -1,0 +1,19 @@
+FROM node:20.12-alpine as base
+
+FROM base AS deps
+WORKDIR /app
+COPY package.json yarn.lock ./
+RUN yarn --frozen-lockfile
+
+FROM base AS runner
+WORKDIR /app
+COPY package.json yarn.lock ./
+COPY --from=deps /app/node_modules ./node_modules
+COPY ./src ./src
+COPY ./prisma/schema.prisma ./prisma/schema.prisma
+COPY ./static ./static
+COPY ./jest.config.ts ./jest.config.ts
+COPY ./tsconfig.json ./tsconfig.json
+COPY ./docker-test-entrypoint.sh /docker-test-entrypoint.sh
+RUN chmod +x /docker-test-entrypoint.sh
+CMD ["/docker-test-entrypoint.sh"]

@@ -13,6 +13,7 @@
     "start:prod": "node dist/src/main",
     "test": "jest",
     "test:watch": "jest --watch",
+    "test:watchAll": "jest --watchAll",
     "test:cov": "jest --coverage",
     "prisma:migrate": "npx prisma migrate dev --name=_",
     "prisma:generate": "npx prisma generate",
