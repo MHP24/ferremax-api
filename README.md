@@ -10,6 +10,7 @@
     <img src="https://user-images.githubusercontent.com/25181517/183890598-19a0ac2d-e88a-4005-a8df-1ee36782fde1.png" width="30" height="30"/>
     <img src="https://user-images.githubusercontent.com/25181517/117208740-bfb78400-adf5-11eb-97bb-09072b6bedfc.png" width="30" height="30"/>
     <img src="https://user-images.githubusercontent.com/25181517/117207330-263ba280-adf4-11eb-9b97-0ac5b40bc3be.png" width="30" height="30"/>
+    <img src="https://user-images.githubusercontent.com/25181517/187955005-f4ca6f1a-e727-497b-b81b-93fb9726268e.png" width="30" height="30"/>
     <img src="https://user-images.githubusercontent.com/25181517/186711335-a3729606-5a78-4496-9a36-06efcc74f800.png" width="30" height="30"/>
     <img src="https://user-images.githubusercontent.com/25181517/183049794-a3dfaddd-22ee-4ffe-b0b4-549ccd4879f9.png" width="30" height="30"/>
     <img src="https://user-images.githubusercontent.com/25181517/187955008-981340e6-b4cc-441b-80cf-7a5e94d29e7e.png" width="30" height="30"/>
@@ -22,6 +23,7 @@
 - [Production demo](#production-demo)
 - [Quick stage demo](#quick-stage-demo)
 - [API Spec & Documentation](#api-spec-documentation)
+- [Testing](#testing)
 
 
 ## <a id="about-this-project"></a>About this project 📕
@@ -65,6 +67,7 @@ DB_HOST | String | Host address of the PostgreSQL database (can be provided for 
 DB_PORT | Integer (positive) | Port on which the PostgreSQL database (can be provided for docker container) |
 DB_USER | String | Username for the PostgreSQL database (can be provided for docker container) |
 DB_PASSWORD | String | Password for the PostgreSQL database (can be provided for docker container) |
+STATIC_FILE_PATH | String | Path for static files directory (Outside src) |
 
 <hr>
  
@@ -104,3 +107,20 @@ To start a quick demo you must to have [Docker](https://www.docker.com/) install
 ## <a id="api-spec-documentation"></a>API Spec & Documentation 📗 
 
 If your app is running correctly you will find the specification at: http://127.0.0.1:PORT/api/v1/docs
+
+## <a id="testing"></a>Testing 🧪
+You have 2 options for testing environment:
+
+1 . __Docker__:
+
+  To start the testing environment with Docker, use the following command:
+```bash
+  docker compose -f docker-compose.testing.yml up --build
+```
+
+2 . __Node (Jest)__:
+
+  To run tests with Jest in a Node environment, use the following command:
+```bash
+  yarn test
+```
