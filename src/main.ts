@@ -4,7 +4,7 @@ import { AppModule } from './app.module';
 import { envs } from './common/config';
 import { swaggerConfig } from './common/swagger/config';
 
-async function bootstrap() {
+export async function bootstrap() {
   const logger = new Logger('Main');
   const app = await NestFactory.create(AppModule);
   const prefix = '/api/v1';

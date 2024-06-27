@@ -11,4 +11,4 @@ fi
 
 # Start app
 echo "Starting application..."
-exec yarn start:prod
+exec yarn test

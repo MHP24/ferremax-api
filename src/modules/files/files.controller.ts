@@ -1,9 +1,9 @@
+import { Response } from 'express';
 import { Controller, Get, Param, Res } from '@nestjs/common';
+import { ApiTags } from '@nestjs/swagger';
 import { FilesService } from './files.service';
 import { GetFileDto } from './dto';
-import { Response } from 'express';
-import { ApiTags } from '@nestjs/swagger';
-import { Swagger } from 'src/common/swagger/decorators';
+import { Swagger } from '../../common/swagger/decorators';
 import { getFileDoc } from './docs';
 
 @ApiTags('files')
