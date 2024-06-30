@@ -4,9 +4,10 @@ import {
   Logger,
   NotFoundException,
 } from '@nestjs/common';
-import { DiscreaseStock, DiscreaseStockOutput } from './types';
+import { DiscreaseStock, DiscreaseStockOutput, StockBranch } from './types';
 import { PrismaService } from '../prisma/prisma.service';
 import { Item } from '../../common/types';
+import { GetStockBranchesDto } from './dto';
 
 @Injectable()
 export class StockService {
@@ -152,5 +153,38 @@ export class StockService {
     if (!areAllProductsInStock) {
       throw new BadRequestException('Some products are not in stock');
     }
+  }
+
+  // * Get all branches with the product related
+  async getProductStockBranches({
+    productId,
+  }: GetStockBranchesDto): Promise<StockBranch> {
+    const stockBranches = await this.prismaService.productStock.findMany({
+      where: {
+        productId,
+      },
+      include: {
+        Branch: {
+          select: {
+            name: true,
+          },
+        },
+      },
+    });
+
+    if (!stockBranches.length) {
+      throw new NotFoundException(
+        `Stock branches not found for product: ${productId}`,
+      );
+    }
+
+    return stockBranches.map(
+      ({ branchId, Branch: { name }, productId, quantity }) => ({
+        branchId,
+        name,
+        productId,
+        quantity,
+      }),
+    );
   }
 }
