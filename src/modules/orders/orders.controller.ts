@@ -1,4 +1,4 @@
-import { Body, Controller, Param, Post } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post } from '@nestjs/common';
 import { User, ValidRoles } from '@prisma/client';
 import { Auth, GetUser } from '../auth/decorators';
 import { CreateOrderDto, CreateOrderParamsDto } from './dto';
@@ -47,5 +47,11 @@ export class OrdersController {
       createOrderParams,
       createOrderDto,
     );
+  }
+
+  @Get('/my-orders')
+  @Auth(ValidRoles.user)
+  getMyOrders(@GetUser() user: User) {
+    return this.ordersService.getMyOrders(user);
   }
 }
