@@ -29,7 +29,7 @@ export class BranchOrdersService implements Order {
     createOrderDto: CreateOrderDto,
   ): Promise<OrderProcessed> {
     // * Get current shopping cart
-    const shoppingCart = await this.shoppingCartsService.getUserShoppingCart(
+    const shoppingCart = await this.shoppingCartsService.getShoppingCart(
       userId,
       cartId,
     );
