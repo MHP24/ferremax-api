@@ -42,6 +42,10 @@ export class SeedService {
 
       // * Add transaction
 
+      // * Branches
+      this.prismaService.branch.createMany({
+        data: branchesSeed,
+      }),
       // * Users
       this.prismaService.user.createMany({
         data: await Promise.all(
@@ -50,10 +54,6 @@ export class SeedService {
             password: await this.hasher.hash(password),
           })),
         ),
-      }),
-      // * Branches
-      this.prismaService.branch.createMany({
-        data: branchesSeed,
       }),
       // * Products
       this.prismaService.productCategory.createMany({

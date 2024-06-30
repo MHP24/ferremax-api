@@ -2,7 +2,7 @@
 
 # Verify database migrations
 if ! prisma migrate status > /dev/null 2>&1; then
-    echo "Aplying migrations"
+    echo "Applying migrations"
     npx prisma migrate dev --name=_
 else
     echo "Migrations already applied"

@@ -1,4 +1,4 @@
-export type Items = {
+export type Item = {
   product: {
     isActive: boolean;
     productId: string;

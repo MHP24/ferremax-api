@@ -1,6 +1,12 @@
-import { BadRequestException, Injectable, Logger } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  Logger,
+  NotFoundException,
+} from '@nestjs/common';
 import { DiscreaseStock, DiscreaseStockOutput } from './types';
 import { PrismaService } from '../prisma/prisma.service';
+import { Item } from '../../common/types';
 
 @Injectable()
 export class StockService {
@@ -10,22 +16,27 @@ export class StockService {
 
   // * Get stock for a single product in a unique branch
   async getProductStockByBranch(productId: string, branchId: string) {
-    const { Product, quantity } =
-      await this.prismaService.productStock.findFirst({
-        where: {
-          productId,
-          branchId,
-        },
-        select: {
-          quantity: true,
-          Product: {
-            select: {
-              productId: true,
-              name: true,
-            },
+    const productStockBranch = await this.prismaService.productStock.findFirst({
+      where: {
+        productId,
+        branchId,
+      },
+      select: {
+        quantity: true,
+        Product: {
+          select: {
+            productId: true,
+            name: true,
           },
         },
-      });
+      },
+    });
+
+    if (!productStockBranch) {
+      throw new NotFoundException('Product stock branch not found');
+    }
+
+    const { Product, quantity } = productStockBranch;
 
     return {
       ...Product,
@@ -115,5 +126,31 @@ export class StockService {
       totalStockDifference,
       branchStockDifference,
     };
+  }
+
+  // * Validate stock availability can handle stock for unique branch
+  async validateStockAvailability(
+    items: Item[],
+    stockBranchId?: string,
+  ): Promise<void> {
+    const productsBranchStock = await Promise.all(
+      items.map(({ product: { productId }, branchId }) =>
+        this.getProductStockByBranch(productId, branchId),
+      ),
+    );
+
+    const areAllProductsInStock = items.every(
+      ({ product: { productId }, branchId, quantity }) =>
+        productsBranchStock.find(
+          (product) =>
+            product.productId === productId &&
+            product.branchId === branchId &&
+            (stockBranchId ? product.branchId === stockBranchId : true),
+        )?.quantity >= quantity,
+    );
+
+    if (!areAllProductsInStock) {
+      throw new BadRequestException('Some products are not in stock');
+    }
   }
 }

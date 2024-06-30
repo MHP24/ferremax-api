@@ -37,12 +37,4 @@ export const shoppingCartItemsSeed = [
     createdAt: new Date(),
     updatedAt: new Date(),
   },
-  {
-    productId: productsSeed[4].productId,
-    quantity: 1,
-    cartId: shoppingCartsSeed[1].cartId,
-    branchId: branchesSeed[1].branchId,
-    createdAt: new Date(),
-    updatedAt: new Date(),
-  },
 ];
